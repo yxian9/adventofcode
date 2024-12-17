@@ -29,12 +29,13 @@ func Abs(a int) int {
 }
 
 func IntsFromString(str string) (intSlice []int) {
-	wordBuf := make([]rune, 0, len(str))
+	// wordBuf := make([]rune, 0, len(str))
+	wordBuf := 0
 
 	n, sign := 0, 1
 	for _, r := range str {
 
-		if r == '-' && len(wordBuf) == 0 {
+		if r == '-' && wordBuf == 0 {
 			// wordBuf = append(wordBuf, r)
 			sign = -1
 			continue
@@ -43,19 +44,18 @@ func IntsFromString(str string) (intSlice []int) {
 		if r >= '0' && r <= '9' {
 			n *= 10
 			n += int(r - '0')
-			wordBuf = append(wordBuf, r)
+			wordBuf++
 			continue
 		}
 
-		if len(wordBuf) > 0 {
+		if wordBuf > 0 {
 			intSlice = append(intSlice, n*sign)
-			wordBuf = wordBuf[:0] // reuse underlying array
-			n, sign = 0, 1
+			n, wordBuf, sign = 0, 0, 1
 		}
 		sign = 1
 	}
 
-	if len(wordBuf) > 0 {
+	if wordBuf > 0 {
 		intSlice = append(intSlice, n*sign)
 	}
 

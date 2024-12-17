@@ -22,16 +22,15 @@ func LinesFromReader(r io.Reader) ([]string, error) {
 	s := bufio.NewScanner(r)
 	s.Split(bufio.ScanLines)
 	for s.Scan() {
-		// line := strings.TrimSpace(s.Text()) // Trim leading and trailing whitespace
-		// if line == "" {                     // Skip empty lines
-		// 	continue
-		// }
 		lines = append(lines, s.Text())
 	}
 	if s.Err() != nil {
 		return nil, fmt.Errorf("failed to scan reader: %w", s.Err())
 	}
 
+	if seeker, ok := r.(io.Seeker); ok {
+		seeker.Seek(0, 0)
+	}
 	return lines, nil
 }
 

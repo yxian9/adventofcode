@@ -46,12 +46,11 @@ func part2(r io.Reader) int {
 }
 
 func main() {
-	arg := os.Args[1]
-	fmt.Println("Running part", arg)
-	switch arg {
-	case "1":
-		fmt.Println("p1 res 🙆-> ", part1(os.Stdin))
-	case "2":
-		fmt.Println("p2 res 🙆-> ", part2(os.Stdin))
+	Input, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
 	}
+	defer Input.Close()
+	fmt.Println("p1 res 🙆-> ", part1(os.Stdin))
+	fmt.Println("p2 res 🙆-> ", part2(os.Stdin))
 }
