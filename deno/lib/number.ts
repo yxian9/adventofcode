@@ -19,7 +19,7 @@ export function IntsFromString(str: string): number[] {
 
     if (rCode >= codeof0 && rCode <= codeof9) {
       n *= 10;
-      n += parseInt(r);
+      n += rCode - codeof0;
       curDigitCount++;
       continue;
     }
