@@ -2,10 +2,10 @@ import { dirname, join } from "@std/path";
 
 export class solve {
   input: string;
-  ans: number;
-  constructor(input: string, ans = 0) {
+  ans = 0;
+
+  constructor(input: string) {
     this.input = input;
-    this.ans = ans;
   }
   part1() {
     this.ans = 0;
@@ -13,7 +13,7 @@ export class solve {
   part2() {
     this.ans = 0;
   }
-  res() {
+  res(): number {
     return this.ans;
   }
 }
