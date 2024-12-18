@@ -15,7 +15,7 @@ type (
 		// lands map[headPt]map[utils.Pt]rune
 		lands map[headPt][]utils.Pt
 		seen  map[utils.Pt]bool
-		utils.Grid
+		utils.StringGrid
 	}
 )
 
@@ -113,7 +113,7 @@ func buildSolution(r io.Reader) *solution {
 		ans:   0,
 		seen:  map[utils.Pt]bool{},
 		lands: map[headPt][]utils.Pt{},
-		Grid: utils.Grid{
+		StringGrid: utils.StringGrid{
 			NRow:  nrow,
 			NCol:  ncol,
 			Array: lines,

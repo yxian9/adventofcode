@@ -51,6 +51,6 @@ func main() {
 		log.Fatalf("fail open input.txt %v", err)
 	}
 	defer Input.Close()
-	fmt.Println("p1 res 🙆-> ", part1(os.Stdin))
-	fmt.Println("p2 res 🙆-> ", part2(os.Stdin))
+	fmt.Println("p1 res 🙆-> ", part1(Input))
+	fmt.Println("p2 res 🙆-> ", part2(Input))
 }
