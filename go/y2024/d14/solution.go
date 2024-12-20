@@ -25,13 +25,13 @@ const (
 
 func (s *solution) run1() {
 	for i := range s.robots {
-		s.robots[i].X = (s.robots[i].X + s.robots[i].vx*seconds) % ncol
-		s.robots[i].Y = (s.robots[i].Y + s.robots[i].vy*seconds) % nrow
-		if s.robots[i].X < 0 {
-			s.robots[i].X += ncol
+		s.robots[i].C = (s.robots[i].C + s.robots[i].vx*seconds) % ncol
+		s.robots[i].R = (s.robots[i].R + s.robots[i].vy*seconds) % nrow
+		if s.robots[i].C < 0 {
+			s.robots[i].C += ncol
 		}
-		if s.robots[i].Y < 0 {
-			s.robots[i].Y += nrow
+		if s.robots[i].R < 0 {
+			s.robots[i].R += nrow
 		}
 	}
 }
@@ -43,7 +43,7 @@ func (s *solution) treeCheck(sec int) bool {
 	}
 
 	for _, r := range s.robots {
-		pixels[r.Y][r.X] = true
+		pixels[r.R][r.C] = true
 	}
 
 	// if sec%1000 == 0 {
@@ -91,13 +91,13 @@ func (s *solution) run2() {
 	sec := 0
 	for {
 		for i := range s.robots {
-			s.robots[i].X = (s.robots[i].X + s.robots[i].vx) % ncol
-			s.robots[i].Y = (s.robots[i].Y + s.robots[i].vy) % nrow
-			if s.robots[i].X < 0 {
-				s.robots[i].X += ncol
+			s.robots[i].C = (s.robots[i].C + s.robots[i].vx) % ncol
+			s.robots[i].R = (s.robots[i].R + s.robots[i].vy) % nrow
+			if s.robots[i].C < 0 {
+				s.robots[i].C += ncol
 			}
-			if s.robots[i].Y < 0 {
-				s.robots[i].Y += nrow
+			if s.robots[i].R < 0 {
+				s.robots[i].R += nrow
 			}
 		}
 		sec++
@@ -111,13 +111,13 @@ func (s *solution) run2() {
 func (s *solution) res() int {
 	quadrants := [4]int{}
 	for _, r := range s.robots {
-		if r.X < ncol/2 && r.Y < nrow/2 {
+		if r.C < ncol/2 && r.R < nrow/2 {
 			quadrants[0]++
-		} else if r.X < ncol/2 && r.Y > nrow/2 {
+		} else if r.C < ncol/2 && r.R > nrow/2 {
 			quadrants[1]++
-		} else if r.X > ncol/2 && r.Y > nrow/2 {
+		} else if r.C > ncol/2 && r.R > nrow/2 {
 			quadrants[2]++
-		} else if r.X > ncol/2 && r.Y < nrow/2 {
+		} else if r.C > ncol/2 && r.R < nrow/2 {
 			quadrants[3]++
 		}
 	}
@@ -139,7 +139,7 @@ func buildSolution(r io.Reader) *solution {
 	for _, line := range lines {
 		ints := utils.IntsFromString(line)
 		rb := robot{
-			utils.Pt{X: ints[0], Y: ints[1]},
+			utils.Pt{C: ints[0], R: ints[1]},
 			ints[2], ints[3],
 		}
 		robots = append(robots, rb)

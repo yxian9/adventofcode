@@ -19,7 +19,7 @@ type solution struct {
 }
 
 func (s *solution) found(an, bn int, a, b, target utils.Pt) bool {
-	return (an*a.X+bn*b.X) == target.X && (an*a.Y+bn*b.Y) == target.Y
+	return (an*a.C+bn*b.C) == target.C && (an*a.R+bn*b.R) == target.R
 }
 
 func (s *solution) lowest(a, b, target utils.Pt) {
@@ -42,7 +42,7 @@ func (s *solution) lowest(a, b, target utils.Pt) {
 }
 
 func (s *solution) lowest2(a, b, target utils.Pt) {
-	ax, ay, bx, by, px, py := a.X, a.Y, b.X, b.Y, target.X, target.Y
+	ax, ay, bx, by, px, py := a.C, a.R, b.C, b.R, target.C, target.R
 	det := ax*by - ay*bx
 	fmt.Println(det, "det")
 
@@ -92,8 +92,8 @@ func buildSolution(r io.Reader) *solution {
 			continue
 		}
 		ints := utils.IntsFromString(line)
-		ps[i%4].X = ints[0]
-		ps[i%4].Y = ints[1]
+		ps[i%4].C = ints[0]
+		ps[i%4].R = ints[1]
 	}
 
 	machines = append(machines, machine{
@@ -128,12 +128,12 @@ func buildSolution2(r io.Reader) *solution {
 		}
 		ints := utils.IntsFromString(line)
 		if i%4 == 2 {
-			ps[i%4].X = ints[0] + 10000000000000
-			ps[i%4].Y = ints[1] + 10000000000000
+			ps[i%4].C = ints[0] + 10000000000000
+			ps[i%4].R = ints[1] + 10000000000000
 			continue
 		}
-		ps[i%4].X = ints[0]
-		ps[i%4].Y = ints[1]
+		ps[i%4].C = ints[0]
+		ps[i%4].R = ints[1]
 	}
 
 	machines = append(machines, machine{

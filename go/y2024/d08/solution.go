@@ -26,7 +26,7 @@ func buildSolution(r io.Reader) solution {
 			if r == '.' {
 				continue
 			}
-			ante[r] = append(ante[r], utils.Pt{X: i, Y: j})
+			ante[r] = append(ante[r], utils.Pt{C: i, R: j})
 		}
 	}
 
@@ -53,7 +53,7 @@ func (s solution) res() int {
 }
 
 func (s solution) isInside(p utils.Pt) bool {
-	return p.X >= 0 && p.X < s.nrow && p.Y >= 0 && p.Y < s.ncol
+	return p.C >= 0 && p.C < s.nrow && p.R >= 0 && p.R < s.ncol
 }
 
 func (s solution) run() {

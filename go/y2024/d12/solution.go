@@ -22,7 +22,7 @@ type (
 func (s *solution) run1() {
 	for i, line := range s.Array {
 		for j, flower := range line {
-			cur := utils.Pt{X: i, Y: j}
+			cur := utils.Pt{C: i, R: j}
 			if s.seen[cur] {
 				continue
 			}
@@ -37,7 +37,7 @@ func (s *solution) res() int {
 		flower := s.PRune(utils.Pt(header))
 		for _, pt := range land {
 			for _, dir := range utils.Dir4 {
-				nexPt := pt.Move(dir.X, dir.Y)
+				nexPt := pt.Move(dir.C, dir.R)
 				if !s.IsInside(nexPt) || s.PRune(nexPt) != flower {
 					perimeter++
 				}
@@ -56,7 +56,7 @@ func (s *solution) res2() int {
 			boolSlice := make([]bool, 4)
 			// check whether neigher direc with same bool
 			for i, dir := range utils.Dir4 {
-				nexPt := pt.Move(dir.X, dir.Y)
+				nexPt := pt.Move(dir.C, dir.R)
 				if !s.IsInside(nexPt) || s.PRune(nexPt) != flower {
 					boolSlice[i] = true
 				}
@@ -70,7 +70,7 @@ func (s *solution) res2() int {
 				// for insider conner, both can go
 				if !v && !boolSlice[neighb] {
 					pt1, pt2 := utils.Dir4[i], utils.Dir4[neighb]
-					anglePt := pt.Move(pt1.X+pt2.X, pt1.Y+pt2.Y)
+					anglePt := pt.Move(pt1.C+pt2.C, pt1.R+pt2.R)
 					if s.PRune(anglePt) != flower {
 						sides++
 					}
@@ -94,7 +94,7 @@ func (s *solution) dfs1(curP utils.Pt, flower rune, header headPt) {
 
 	s.lands[header] = append(s.lands[header], curP)
 	for _, dir := range utils.Dir4 {
-		nextP := curP.Move(dir.X, dir.Y)
+		nextP := curP.Move(dir.C, dir.R)
 		s.dfs1(nextP, flower, header)
 	}
 }

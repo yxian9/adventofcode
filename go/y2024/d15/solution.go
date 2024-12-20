@@ -17,14 +17,14 @@ type solution struct {
 }
 
 var Dirs = map[rune]utils.Pt{
-	'v': {X: 0, Y: 1},
-	'<': {X: -1, Y: 0},
-	'^': {X: 0, Y: -1},
-	'>': {X: 1, Y: 0},
+	'v': {C: 0, R: 1},
+	'<': {C: -1, R: 0},
+	'^': {C: 0, R: -1},
+	'>': {C: 1, R: 0},
 }
 
 func (s *solution) run1() {
-	s.Array[s.robot.Y][s.robot.X] = '.'
+	s.Array[s.robot.R][s.robot.C] = '.'
 	for _, r := range s.instruct {
 		dir := Dirs[r]
 		nexMove := s.robot.PMove(dir)
@@ -189,7 +189,7 @@ func buildSolution(r io.Reader) *solution {
 		if firstPart {
 			for j, r := range line {
 				if r == '@' {
-					robot = utils.Pt{X: j, Y: i}
+					robot = utils.Pt{C: j, R: i}
 				}
 			}
 			grid = append(grid, []rune(line))
@@ -231,7 +231,7 @@ func buildSolution2(r io.Reader) *solution {
 			for j, r := range line {
 				switch r {
 				case '@':
-					robot = utils.Pt{X: 2 * j, Y: i}
+					robot = utils.Pt{C: 2 * j, R: i}
 					cur = append(cur, '.', '.')
 				case '#':
 					cur = append(cur, '#', '#')

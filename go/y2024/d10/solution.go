@@ -17,16 +17,16 @@ type solution struct {
 }
 
 func (s *solution) isInside(pt utils.Pt) bool {
-	return pt.X >= 0 && pt.X < s.nrow && pt.Y >= 0 && pt.Y < s.ncol
+	return pt.C >= 0 && pt.C < s.nrow && pt.R >= 0 && pt.R < s.ncol
 }
 
 func (s *solution) found(sp, cp utils.Pt) {
-	id := fmt.Sprintf("%d,%d,%d,%d", sp.X, sp.Y, cp.X, cp.Y)
+	id := fmt.Sprintf("%d,%d,%d,%d", sp.C, sp.R, cp.C, cp.R)
 	s.trailHeader[id] = true
 }
 
 func (s *solution) pInt(pt utils.Pt) int {
-	return int(s.grid[pt.X][pt.Y] - '0')
+	return int(s.grid[pt.C][pt.R] - '0')
 }
 
 func (s *solution) dfs1(startP, curP utils.Pt, target int) {
@@ -39,7 +39,7 @@ func (s *solution) dfs1(startP, curP utils.Pt, target int) {
 	}
 	s.seen[curP] = true
 	for _, dir := range utils.Dir4 {
-		s.dfs1(startP, curP.Move(dir.X, dir.Y), target+1)
+		s.dfs1(startP, curP.Move(dir.C, dir.R), target+1)
 	}
 	s.seen[curP] = false
 }
@@ -48,7 +48,7 @@ func (s *solution) run1() {
 	for i, line := range s.grid {
 		for j, r := range line {
 			if r == '0' {
-				cp := utils.Pt{X: i, Y: j}
+				cp := utils.Pt{C: i, R: j}
 				s.dfs1(cp, cp, 0)
 			}
 		}
@@ -64,7 +64,7 @@ func (s *solution) dfs2(startP, curP utils.Pt, target int) {
 		return
 	}
 	for _, dir := range utils.Dir4 {
-		nxP := curP.Move(dir.X, dir.Y)
+		nxP := curP.Move(dir.C, dir.R)
 		s.seen[curP] = true
 		s.dfs2(startP, nxP, target+1)
 		s.seen[curP] = false
@@ -75,7 +75,7 @@ func (s *solution) run2() {
 	for i, line := range s.grid {
 		for j, r := range line {
 			if r == '0' {
-				cp := utils.Pt{X: i, Y: j}
+				cp := utils.Pt{C: i, R: j}
 				s.dfs2(cp, cp, 0)
 			}
 		}
