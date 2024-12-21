@@ -80,7 +80,6 @@ func (s *solution) bfs(p, dir utils.Pt) {
 					s.ans = l.score
 				}
 			}
-
 			for _, dir := range utils.Dir4 {
 
 				nextP := l.pos.PMove(dir)
@@ -149,8 +148,7 @@ func (s *solution) bfs2(p, dir utils.Pt) {
 				if !ok || next_score <= score {
 					s.posDirScore[nextPosDir] = next_score
 					newPath := append([]utils.Pt{}, l.path...)
-					newPath = append(newPath, l.pos)
-					queue = append(queue, bp{nextP, dir, next_score, newPath})
+					queue = append(queue, bp{nextP, dir, next_score, append(newPath, l.pos)})
 					// queue = append(queue, bp{nextP, dir, next_score, append(l.path, l.pos)}) // this will modify the upderline array
 					// if array get reallocated, when next dir use l.path, the l.path is gone is gone
 				}
