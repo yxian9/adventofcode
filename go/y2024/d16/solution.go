@@ -12,13 +12,15 @@ type solution struct {
 	ans, step int
 	utils.StringGrid
 	utils.Seen
-	count      map[utils.Pt]int
-	space      map[utils.Pt]bool
-	start, end utils.Pt
+	minScore    map[utils.Pt]int
+	posDirScore map[[2]utils.Pt]int
+	paths       map[utils.Pt]bool
+	start, end  utils.Pt
 }
 type bp struct {
-	p, d  utils.Pt
-	score int
+	pos, dir utils.Pt
+	score    int
+	path     []utils.Pt
 }
 
 func (s *solution) dfs(p, angle utils.Pt, score int) {
@@ -27,10 +29,10 @@ func (s *solution) dfs(p, angle utils.Pt, score int) {
 	}
 	if s.PRune(p) == 'E' {
 		if score == s.ans {
-			fmt.Println("found", len(s.space), "score:", score, "position", p)
+			fmt.Println("found", len(s.paths), "score:", score, "position", p)
 			for k, v := range s.Seen {
 				if v {
-					s.space[k] = true
+					s.paths[k] = true
 				}
 			}
 		}
@@ -45,16 +47,20 @@ func (s *solution) dfs(p, angle utils.Pt, score int) {
 			turned = 1
 		}
 		nextScore := score + 1 + 1000*turned
-		// if s.count[nextP] == nextScore {
 		s.dfs(nextP, dir, nextScore)
-		// }
 	}
 	s.Seen[p] = false
 }
 
-func (s *solution) bfs(p, angle utils.Pt) {
-	queue := []bp{{p, angle, 0}}
-	s.count[p] = 0
+func (s *solution) posdir(p, d utils.Pt) (a [2]utils.Pt) {
+	a[0], a[1] = p, d
+	return a
+}
+
+func (s *solution) bfs(p, dir utils.Pt) {
+	queue := []bp{{p, dir, 0, nil}}
+	s.minScore[p] = 0
+
 	for len(queue) > 0 {
 		n := len(queue)
 
@@ -63,32 +69,35 @@ func (s *solution) bfs(p, angle utils.Pt) {
 			l := queue[0]
 			queue = queue[1:]
 
-			if s.PRune(l.p) == 'E' {
-				// fmt.Println("bfs E", "cur ans:", s.ans, "cur socre:", l.score)
-				if s.ans == 0 {
+			if s.PRune(l.pos) == 'E' {
+				fmt.Println("first part E", "cur ans:", s.ans, "cur socre:", l.score)
+				// if s.ans == 0 {
+				// 	s.ans = l.score
+				// } else {
+				// 	s.ans = min(s.ans, l.score)
+				// }
+				if s.ans == 0 || l.score < s.ans {
 					s.ans = l.score
-				} else {
-					s.ans = min(s.ans, l.score)
 				}
 			}
 
 			for _, dir := range utils.Dir4 {
 
-				nextP := l.p.PMove(dir)
-				if !s.IsInside(nextP) || s.PRune(nextP) == '#' {
+				nextP := l.pos.PMove(dir)
+				if s.PRune(nextP) == '#' {
 					continue
 				}
 				turned := 0
-				if l.d != dir {
+				if l.dir != dir {
 					turned = 1
 				}
 				next_score := l.score + 1 + 1000*turned
 
-				preScore, ok := s.count[nextP]
+				score, ok := s.minScore[nextP]
 
-				if !ok || next_score <= preScore {
-					s.count[nextP] = next_score
-					queue = append(queue, bp{nextP, dir, next_score})
+				if !ok || next_score < score {
+					s.minScore[nextP] = next_score
+					queue = append(queue, bp{nextP, dir, next_score, nil})
 				}
 
 			}
@@ -98,39 +107,54 @@ func (s *solution) bfs(p, angle utils.Pt) {
 	}
 }
 
-func (s *solution) bfs2(p, angle utils.Pt) {
-	queue := []bp{{p, angle, s.ans}}
-	// fmt.Println(s.count[p], p)
-	for len(queue) > 0 {
-		n := len(queue)
+func (s *solution) bfs2(p, dir utils.Pt) {
+	queue := []bp{{p, dir, 0, nil}}
+	for _, v := range utils.Dir4 {
+		cur := s.posdir(p, v)
+		s.posDirScore[cur] = 0
+	}
 
+	for len(queue) > 0 {
+
+		n := len(queue)
 		for n > 0 {
 			l := queue[0]
 			queue = queue[1:]
-			s.space[l.p] = true
-			nextTarget := l.score
-			for _, dir := range utils.Dir4 {
-				nextP := l.p.PMove(dir)
-				if s.space[nextP] {
-					continue
-				}
-
-				if nextScore, ok := s.count[nextP]; ok {
-					nextTarget = min(nextTarget, nextScore)
-				}
-			}
-			for _, dir := range utils.Dir4 {
-				nextP := l.p.PMove(dir)
-				if s.space[nextP] || s.count[nextP] == 0 {
-					continue
-				}
-				if s.count[nextP] == nextTarget || s.count[nextP] == nextTarget+1000 {
-					// fmt.Println("nexttarget:", nextTarget, "enqueued:", s.count[nextP])
-					queue = append(queue, bp{nextP, dir, nextTarget})
-				}
-			}
-
 			n--
+			if l.score > s.ans {
+				continue
+			}
+			if s.PRune(l.pos) == 'E' && l.score == s.ans {
+
+				for _, v := range l.path {
+					s.paths[v] = true
+				}
+				// fmt.Println("found")
+				continue
+			}
+
+			for _, dir := range utils.Dir4 {
+				nextP := l.pos.PMove(dir)
+				if s.PRune(nextP) == '#' {
+					continue
+				}
+				nextPosDir := s.posdir(nextP, dir)
+				turned := 0
+				if l.dir != dir {
+					turned = 1
+				}
+				next_score := l.score + 1 + 1000*turned
+				score, ok := s.posDirScore[nextPosDir]
+
+				if !ok || next_score <= score {
+					s.posDirScore[nextPosDir] = next_score
+					newPath := append([]utils.Pt{}, l.path...)
+					newPath = append(newPath, l.pos)
+					queue = append(queue, bp{nextP, dir, next_score, newPath})
+					// queue = append(queue, bp{nextP, dir, next_score, append(l.path, l.pos)}) // this will modify the upderline array
+					// if array get reallocated, when next dir use l.path, the l.path is gone is gone
+				}
+			}
 		}
 	}
 }
@@ -154,8 +178,7 @@ func (s *solution) run1() {
 
 func (s *solution) run2() {
 	s.bfs(s.start, utils.Dir4[3])
-	s.bfs2(s.end, utils.Dir4[3])
-	// s.dfs(s.start, utils.Dir4[3], 0)
+	s.bfs2(s.start, utils.Dir4[3])
 }
 
 func (s *solution) res() int {
@@ -163,7 +186,7 @@ func (s *solution) res() int {
 }
 
 func (s *solution) res2() int {
-	return len(s.space) + 1
+	return len(s.paths) + 1
 }
 
 func buildSolution(r io.Reader) *solution {
@@ -173,11 +196,12 @@ func buildSolution(r io.Reader) *solution {
 	}
 
 	return &solution{
-		Seen:  make(utils.Seen),
-		start: utils.Pt{C: 1, R: len(lines) - 2},
-		end:   utils.Pt{C: len(lines[0]) - 2, R: 1},
-		count: map[utils.Pt]int{},
-		space: map[utils.Pt]bool{},
+		Seen:        make(utils.Seen),
+		start:       utils.Pt{C: 1, R: len(lines) - 2},
+		end:         utils.Pt{C: len(lines[0]) - 2, R: 1},
+		minScore:    map[utils.Pt]int{},
+		posDirScore: map[[2]utils.Pt]int{},
+		paths:       map[utils.Pt]bool{},
 		StringGrid: utils.StringGrid{
 			NRow:  len(lines),
 			NCol:  len(lines[0]),
