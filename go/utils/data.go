@@ -59,6 +59,10 @@ func (g *Grid[T]) Get(pt Pt) T {
 	return g.Array[pt.R][pt.C]
 }
 
+func (g *Grid[T]) Set(pt Pt, v T) {
+	g.Array[pt.R][pt.C] = v
+}
+
 func (g *Grid[T]) Swap(pt1, pt2 Pt) {
 	g.Array[pt2.R][pt2.C], g.Array[pt1.R][pt1.C] = g.Array[pt1.R][pt1.C], g.Array[pt2.R][pt2.C]
 }
