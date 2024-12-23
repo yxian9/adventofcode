@@ -34,11 +34,11 @@ func (s *solution) run1() {
 func (s *solution) res() int {
 	for header, land := range s.lands {
 		area, perimeter := len(land), 0
-		flower := s.PRune(utils.Pt(header))
+		flower := s.GetRune(utils.Pt(header))
 		for _, pt := range land {
 			for _, dir := range utils.Dir4 {
 				nexPt := pt.Move(dir.C, dir.R)
-				if !s.IsInside(nexPt) || s.PRune(nexPt) != flower {
+				if !s.IsInside(nexPt) || s.GetRune(nexPt) != flower {
 					perimeter++
 				}
 			}
@@ -51,13 +51,13 @@ func (s *solution) res() int {
 func (s *solution) res2() int {
 	for header, land := range s.lands {
 		area, sides := len(land), 0
-		flower := s.PRune(utils.Pt(header))
+		flower := s.GetRune(utils.Pt(header))
 		for _, pt := range land {
 			boolSlice := make([]bool, 4)
 			// check whether neigher direc with same bool
 			for i, dir := range utils.Dir4 {
 				nexPt := pt.Move(dir.C, dir.R)
-				if !s.IsInside(nexPt) || s.PRune(nexPt) != flower {
+				if !s.IsInside(nexPt) || s.GetRune(nexPt) != flower {
 					boolSlice[i] = true
 				}
 			}
@@ -71,7 +71,7 @@ func (s *solution) res2() int {
 				if !v && !boolSlice[neighb] {
 					pt1, pt2 := utils.Dir4[i], utils.Dir4[neighb]
 					anglePt := pt.Move(pt1.C+pt2.C, pt1.R+pt2.R)
-					if s.PRune(anglePt) != flower {
+					if s.GetRune(anglePt) != flower {
 						sides++
 					}
 				}
@@ -84,7 +84,7 @@ func (s *solution) res2() int {
 }
 
 func (s *solution) dfs1(curP utils.Pt, flower rune, header headPt) {
-	if !s.IsInside(curP) || s.PRune(curP) != flower || s.seen[curP] {
+	if !s.IsInside(curP) || s.GetRune(curP) != flower || s.seen[curP] {
 		return
 	}
 	s.seen[curP] = true

@@ -26,24 +26,25 @@ var Dir4 = []Pt{
 }
 
 type StringGrid struct {
-	NRow, NCol int
+	NCol, NRow int
 	Array      []string
 }
 
 func (g *StringGrid) IsInside(pt Pt) bool {
-	return pt.C >= 0 && pt.C < g.NCol && pt.R >= 0 && pt.R < g.NRow
+	nrow, ncol := len(g.Array), len(g.Array[0])
+	return pt.C >= 0 && pt.C < ncol && pt.R >= 0 && pt.R < nrow
 }
 
-func (g *StringGrid) PByte(pt Pt) byte {
+func (g *StringGrid) GetByte(pt Pt) byte {
 	return g.Array[pt.R][pt.C]
 }
 
-func (g *StringGrid) PInt(pt Pt) int {
-	return int(g.PByte(pt) - '0')
+func (g *StringGrid) GetInt(pt Pt) int {
+	return int(g.GetByte(pt) - '0')
 }
 
-func (g *StringGrid) PRune(pt Pt) rune {
-	return rune(g.PByte(pt))
+func (g *StringGrid) GetRune(pt Pt) rune {
+	return rune(g.GetByte(pt))
 }
 
 type Grid[T comparable] struct {

@@ -24,10 +24,10 @@ type bp struct {
 }
 
 func (s *solution) dfs(p, angle utils.Pt, score int) {
-	if s.PRune(p) == '#' || score > s.ans || s.Seen[p] {
+	if s.GetRune(p) == '#' || score > s.ans || s.Seen[p] {
 		return
 	}
-	if s.PRune(p) == 'E' {
+	if s.GetRune(p) == 'E' {
 		if score == s.ans {
 			fmt.Println("found", len(s.paths), "score:", score, "position", p)
 			for k, v := range s.Seen {
@@ -69,7 +69,7 @@ func (s *solution) bfs(p, dir utils.Pt) {
 			l := queue[0]
 			queue = queue[1:]
 
-			if s.PRune(l.pos) == 'E' {
+			if s.GetRune(l.pos) == 'E' {
 				fmt.Println("first part E", "cur ans:", s.ans, "cur socre:", l.score)
 				// if s.ans == 0 {
 				// 	s.ans = l.score
@@ -83,7 +83,7 @@ func (s *solution) bfs(p, dir utils.Pt) {
 			for _, dir := range utils.Dir4 {
 
 				nextP := l.pos.PMove(dir)
-				if s.PRune(nextP) == '#' {
+				if s.GetRune(nextP) == '#' {
 					continue
 				}
 				turned := 0
@@ -123,7 +123,7 @@ func (s *solution) bfs2(p, dir utils.Pt) {
 			if l.score > s.ans {
 				continue
 			}
-			if s.PRune(l.pos) == 'E' && l.score == s.ans {
+			if s.GetRune(l.pos) == 'E' && l.score == s.ans {
 
 				for _, v := range l.path {
 					s.paths[v] = true
@@ -134,7 +134,7 @@ func (s *solution) bfs2(p, dir utils.Pt) {
 
 			for _, dir := range utils.Dir4 {
 				nextP := l.pos.PMove(dir)
-				if s.PRune(nextP) == '#' {
+				if s.GetRune(nextP) == '#' {
 					continue
 				}
 				nextPosDir := s.posdir(nextP, dir)
