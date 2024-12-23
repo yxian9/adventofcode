@@ -71,7 +71,7 @@ func (s *solution) findCheat2(start utils.Pt) {
 			queue = queue[1:]
 			if s.GetRune(p) != W && p != start {
 				distance := s.orders[p] - s.orders[start]
-				if save := distance - step; save >= 50 {
+				if save := distance - step; save >= 100 {
 					s.saves[save]++
 				}
 			}

@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 )
 
 type solution struct {
@@ -50,7 +51,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("fail open input.txt %v", err)
 	}
-	defer Input.Close()
-	fmt.Println("p1 res 🙆-> ", part1(Input))
-	fmt.Println("p2 res 🙆-> ", part2(Input))
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
 }
