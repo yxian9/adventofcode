@@ -1,6 +1,6 @@
 import "@std/dotenv/load";
 import { ensureDirSync, existsSync } from "@std/fs";
-import { process, SolutionConstructor } from "./utils.ts";
+import { SolutionConstructor } from "./types.ts";
 type Day = {
   day: string;
   year: string;
@@ -28,9 +28,18 @@ export async function run(date: Day) {
   const { solution } = await import("." + solve) as {
     solution: SolutionConstructor;
   };
-  process(solution, inputPath);
+  exec(solution, inputPath);
 }
 
+export function exec(solution: SolutionConstructor, inputPath: string) {
+  const input = Deno.readTextFileSync(inputPath).trim();
+  const s1 = new solution(input);
+  s1.part1();
+  console.log("Part1 result ->", s1.res());
+  const s2 = new solution(input);
+  s2.part2();
+  console.log("Part2 result ->", s2.res());
+}
 export async function test(date: Day) {
   // const absoluteTestPath = resolve(
   //   fromFileUrl(Deno.mainModule),
@@ -51,16 +60,20 @@ const BASE_URL = "https://adventofcode.com";
 export async function init(date: Day) {
   const { solve, inputPath, testInput, test, id } = templPaths(date);
   ensureDirSync(`solution/${id}`);
-  if (!(existsSync(inputPath))) await fetchInput(date, inputPath);
+  if (existsSync(inputPath)) {
+    console.log("AOC ", date, "skip download input~");
+  } else {
+    await fetchInput(date, inputPath);
+  }
   if (!(existsSync(solve))) {
-    await Deno.copyFile(solve.replace(`./solution/${id}`, "template"), solve);
+    await Deno.copyFile("./template/solve.ts.txt", solve);
   }
   if (!(existsSync(test))) {
-    await Deno.copyFile(test.replace(`./solution/${id}`, "template"), test);
+    await Deno.copyFile("./template/solve_test.ts", test);
   }
   if (!(existsSync(testInput))) {
     await Deno.copyFile(
-      testInput.replace(`./solution/${id}`, "template"),
+      "./template/test1.txt",
       testInput,
     );
   }

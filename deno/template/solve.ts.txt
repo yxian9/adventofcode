@@ -1,6 +1,6 @@
-import { process, type SolutionMethods } from "../lib/utils.ts";
+import { exec } from "../../../lib/cli.ts";
 
-export class solution implements SolutionMethods {
+export class solution {
   input: string;
   lines: string[];
   ans = 0;
@@ -9,15 +9,15 @@ export class solution implements SolutionMethods {
     this.input = input;
     this.lines = input.split("\n");
   }
+  res(): number {
+    return this.ans;
+  }
   part1() {
   }
   part2() {
   }
-  res(): number {
-    return this.ans;
-  }
 }
 
 if (import.meta.main) {
-  process(solution, "./input.txt");
+  exec(solution, "input.txt");
 }

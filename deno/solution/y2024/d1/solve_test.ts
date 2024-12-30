@@ -1,20 +1,20 @@
 import { assertEquals } from "@std/assert/equals";
 import { dirname, join } from "@std/path";
-import { solve } from "./solve.ts";
+import { solution } from "./solve.ts";
 
 const __dirname = dirname(import.meta.url);
 const filePath = new URL(join(__dirname, "test1.txt"));
 
 Deno.test("part-1", () => {
   const input = Deno.readTextFileSync(filePath).trim();
-  const s1 = new solve(input);
+  const s1 = new solution(input);
   s1.part1();
-  assertEquals(s1.res(), 0);
+  assertEquals(s1.res(), 11);
 });
 
 Deno.test("part-2", () => {
   const input = Deno.readTextFileSync(filePath).trim();
-  const s2 = new solve(input);
-  s2.part1();
-  assertEquals(s2.res(), 0);
+  const s2 = new solution(input);
+  s2.part2();
+  assertEquals(s2.res(), 31);
 });

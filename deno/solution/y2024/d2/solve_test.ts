@@ -9,12 +9,12 @@ Deno.test("part-1", () => {
   const input = Deno.readTextFileSync(filePath).trim();
   const s1 = new solution(input);
   s1.part1();
-  assertEquals(s1.res(), 0);
+  assertEquals(s1.res(), 2);
 });
 
 Deno.test("part-2", () => {
   const input = Deno.readTextFileSync(filePath).trim();
   const s2 = new solution(input);
-  s2.part1();
-  assertEquals(s2.res(), 0);
+  s2.part2();
+  assertEquals(s2.res(), 4);
 });
