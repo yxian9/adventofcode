@@ -1,5 +1,6 @@
-import { ensureDirSync, existsSync } from "@std/fs";
 import "@std/dotenv/load";
+import { ensureDirSync, existsSync } from "@std/fs";
+import { process, SolutionConstructor } from "./utils.ts";
 type Day = {
   day: string;
   year: string;
@@ -14,18 +15,20 @@ export function getCurrentDayAndYear(): Day {
 }
 
 export function templPaths({ year, day }: Day) {
-  const id = `y${year}/${day}`;
+  const id = `y${year}/d${day}`;
   const solve = `./solution/${id}/solve.ts`;
   const test = `./solution/${id}/solve_test.ts`;
-  const input = `./solution/${id}/input.txt`;
+  const inputPath = `./solution/${id}/input.txt`;
   const testInput = `./solution/${id}/test1.txt`;
-  return { solve, input, testInput, test, id };
+  return { solve, inputPath, testInput, test, id };
 }
 
 export async function run(date: Day) {
-  const { solve } = templPaths(date);
-  const fn = await import("." + solve); //relative import path
-  fn.default();
+  const { solve, inputPath } = templPaths(date);
+  const { solution } = await import("." + solve) as {
+    solution: SolutionConstructor;
+  };
+  process(solution, inputPath);
 }
 
 export async function test(date: Day) {
@@ -46,9 +49,9 @@ const AOC_SESSION = Deno.env.get("AOC_SESSION") ?? "";
 const BASE_URL = "https://adventofcode.com";
 
 export async function init(date: Day) {
-  const { solve, input, testInput, test, id } = templPaths(date);
+  const { solve, inputPath, testInput, test, id } = templPaths(date);
   ensureDirSync(`solution/${id}`);
-  if (!(existsSync(input))) await fetchInput(date, input);
+  if (!(existsSync(inputPath))) await fetchInput(date, inputPath);
   if (!(existsSync(solve))) {
     await Deno.copyFile(solve.replace(`./solution/${id}`, "template"), solve);
   }
@@ -69,5 +72,6 @@ async function fetchInput({ year, day }: Day, path: string) {
   const input = await fetch(`${BASE_URL}/${year}/day/${day}/input`, {
     headers: { Cookie: `session=${AOC_SESSION}` },
   }).then((x) => x.text());
+  if (input.length == 0) throw new Error("No input found");
   return Deno.writeTextFile(path, input.trim());
 }
