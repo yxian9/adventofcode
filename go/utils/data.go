@@ -26,8 +26,7 @@ var Dir4 = []Pt{
 }
 
 type StringGrid struct {
-	NCol, NRow int
-	Array      []string
+	Array []string
 }
 
 func (g *StringGrid) IsInside(pt Pt) bool {
@@ -48,12 +47,12 @@ func (g *StringGrid) GetRune(pt Pt) rune {
 }
 
 type Grid[T comparable] struct {
-	NRow, NCol int
-	Array      [][]T
+	Array [][]T
 }
 
 func (g *Grid[T]) IsInside(pt Pt) bool {
-	return pt.C >= 0 && pt.C < g.NCol && pt.R >= 0 && pt.R < g.NRow
+	nrow, ncol := len(g.Array), len(g.Array[0])
+	return pt.C >= 0 && pt.C < ncol && pt.R >= 0 && pt.R < nrow
 }
 
 func (g *Grid[T]) Get(pt Pt) T {
@@ -82,4 +81,4 @@ func (g *Grid[T]) Find(start, dir Pt, target, ban T) (result Pt, find bool) {
 	}
 }
 
-type Seen map[Pt]bool
+type PtSeen map[Pt]bool
