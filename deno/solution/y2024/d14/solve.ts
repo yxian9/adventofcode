@@ -1,5 +1,5 @@
-import { dirname, join } from "@std/path";
-import { IntsFromString } from "../../../lib/number.ts";
+import { IntsFromLine } from "../../../lib/number.ts";
+import { exec } from "../../../lib/cli.ts";
 
 type Pt = {
   x: number;
@@ -12,17 +12,17 @@ type robot = {
 };
 const ncol = 101, nrow = 103, seconds = 100;
 
-export class solver {
+export class solution {
   input: string;
   ans = 0;
-  strings: string[];
+  lines: string[];
   robots: robot[] = [];
 
   constructor(input: string) {
     this.input = input;
-    this.strings = this.input.split("\n");
-    for (const line of this.strings) {
-      const [x, y, vx, vy] = IntsFromString(line);
+    this.lines = this.input.split("\n");
+    for (const line of this.lines) {
+      const [x, y, vx, vy] = IntsFromLine(line);
       const Pt = { x, y };
       this.robots.push({ Pt, vx, vy });
     }
@@ -65,14 +65,6 @@ export class solver {
   }
 }
 
-export default function run() {
-  const __dirname = dirname(import.meta.url);
-  const filePath = new URL(join(__dirname, "input.txt"));
-  const input = Deno.readTextFileSync(filePath).trim();
-  const s1 = new solver(input);
-  s1.part1();
-  console.log("Part1 result ->", s1.res());
-  const s2 = new solver(input);
-  s2.part2();
-  console.log("Part2 result ->", s2.res());
+if (import.meta.main) {
+  exec(solution, "input.txt");
 }

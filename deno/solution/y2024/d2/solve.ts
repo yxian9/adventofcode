@@ -25,7 +25,7 @@ export class solution {
     const initDiff = arr[1] - arr[0]; // magic 1 0
     for (let idx = startIdx; idx < arr.length; idx++) { // magic 1
       const diff = arr[idx] - arr[idx - 1]; // magic 1
-      if (diff * initDiff <= 0 || Math.abs(diff) < 1 || Math.abs(diff) > 3) {
+      if (diff * initDiff < 0 || Math.abs(diff) < 1 || Math.abs(diff) > 3) {
         return false;
       }
     }
