@@ -32,6 +32,8 @@ export class solution {
 
     for (const parent of record) {
       if (!this.deps.has(parent)) {
+        parentSet.add(parent);
+
         continue;
       }
       for (const child of this.deps.get(parent)!) {
@@ -59,27 +61,31 @@ export class solution {
   }
   buildDep(record: number[]) {
     const res = new Map<number, number[]>();
+    for (const v of record) {
+      res.set(v, []);
+    }
     for (const parent of record) {
       if (this.deps.has(parent)) {
-        const cur = [];
         for (const item of this.deps.get(parent)!) {
           if (record.includes(item)) {
-            cur.push(item);
+            res.get(parent)!.push(item);
           }
         }
-        res.set(parent, cur);
       }
     }
 
     return res;
   }
-  buildInDegree(deps: Map<number, number[]>): Map<number, number> {
+  buildInDegree(
+    deps: Map<number, number[]>,
+    records: number[],
+  ): Map<number, number> {
     const res = new Map<number, number>();
+    for (const v of records) {
+      res.set(v, 0);
+    }
     for (const [_, childs] of deps) {
       for (const child of childs) {
-        if (!res.has(child)) {
-          res.set(child, 0);
-        }
         const cur = res.get(child)!;
         res.set(child, cur + 1);
       }
@@ -88,9 +94,9 @@ export class solution {
   }
   topSort(record: number[]): number[] {
     const deps = this.buildDep(record);
-    const inDegree = this.buildInDegree(deps);
-    console.table(deps);
-    console.table(inDegree);
+    const inDegree = this.buildInDegree(deps, record);
+    // console.table(deps);
+    // console.table(inDegree);
     const res: number[] = [];
     const queue: number[] = [];
     for (const [key, value] of inDegree) {
@@ -100,15 +106,18 @@ export class solution {
     }
     while (queue.length > 0) {
       const leftHead = queue.shift()!;
+      res.push(leftHead);
+      // console.log(leftHead);
       for (const child of deps.get(leftHead)!) {
         const cur = inDegree.get(child)!;
         inDegree.set(child, cur - 1);
         if (cur - 1 === 0) {
-          queue.push(cur);
+          queue.push(child);
         }
       }
     }
 
+    // console.table(res);
     return res;
   }
   part2() {
@@ -120,7 +129,7 @@ export class solution {
     }
     for (const record of this.records) {
       if (!this.isSorted(record)) {
-        console.log("check", record);
+        // console.log("check", record);
         const newSorted = this.topSort(record);
         const mid = newSorted[newSorted.length >> 1];
         this.ans += mid;
@@ -130,6 +139,6 @@ export class solution {
 }
 
 if (import.meta.main) {
-  // exec(solution, "input.txt");
+  exec(solution, "input.txt");
   exec(solution, "test1.txt");
 }

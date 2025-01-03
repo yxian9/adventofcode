@@ -19,5 +19,6 @@ export class solution {
 }
 
 if (import.meta.main) {
+  exec(solution, "test1.txt");
   exec(solution, "input.txt");
 }
