@@ -13,7 +13,7 @@ export function IntsFromLine(str: string): number[] {
     }
 
     if (rCode >= codeof0 && rCode <= codeof9) {
-      num += num * 10 + (rCode - codeof0);
+      num = num * 10 + (rCode - codeof0);
       digitLen++;
       continue;
     }
