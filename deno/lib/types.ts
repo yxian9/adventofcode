@@ -5,6 +5,7 @@ export interface SolutionMethods {
   part1(): void;
   part2(): void;
   res(): number;
+  res2?(): number;
 }
 
 export type SolutionConstructor = {

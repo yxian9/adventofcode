@@ -38,7 +38,7 @@ export function exec(solution: SolutionConstructor, inputPath: string) {
   console.log("Part1 result ->", s1.res());
   const s2 = new solution(input);
   s2.part2();
-  console.log("Part2 result ->", s2.res());
+  console.log("Part2 result ->", s2.res2?.() ?? s2.res());
 }
 export async function test(date: Day) {
   // const absoluteTestPath = resolve(
