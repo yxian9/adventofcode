@@ -7,6 +7,7 @@ export class solution {
   ans = 0;
   grid: Grid<string>;
   seen = new Set<string>();
+  p2seen = new Set<string>();
   start = new Pt(0, 0);
 
   constructor(input: string) {
@@ -47,31 +48,32 @@ export class solution {
   part1() {
     this.dfs(this.start, 0);
   }
-  dfs2(p: Pt, angle: number, seen: Set<string>) {
-    const nextP = p.pMove(Dirs[angle]);
-    const id = nextP.id + ";" + String(angle);
-    if (!this.grid.isInside(nextP)) {
-      return;
-    }
-    if (seen.has(id)) {
+  dfs2(p: Pt, angle: number) {
+    const id = p.id + ";" + String(angle);
+    if (this.p2seen.has(id)) {
       this.ans++;
       return;
     }
+    this.p2seen.add(id);
+    const nextP = p.pMove(Dirs[angle]);
+    if (!this.grid.isInside(nextP)) {
+      return;
+    }
     if (this.grid.PGet(nextP) === "#") {
-      seen.add(id);
-      this.dfs2(p, (angle + 1) % 4, seen);
+      this.dfs2(p, (angle + 1) % 4);
     } else {
-      this.dfs2(nextP, angle, seen);
+      this.dfs2(nextP, angle);
     }
   }
   part2() {
+    this.part1();
     for (let r = 0; r < this.grid.nrow; r++) {
       for (let c = 0; c < this.grid.ncol; c++) {
         const char = this.grid.get(r, c);
-        if (char === ".") {
-          const seen = new Set<string>();
+        if (char === "." && this.seen.has(`${r}:${c}`)) {
+          this.p2seen.clear();
           this.grid.set(r, c, "#");
-          this.dfs2(this.start, 0, seen);
+          this.dfs2(this.start, 0);
           this.grid.set(r, c, ".");
         }
       }
@@ -80,6 +82,11 @@ export class solution {
 }
 
 if (import.meta.main) {
+  console.time("Execution time for test1.txt");
   exec(solution, "test1.txt");
+  console.timeEnd("Execution time for test1.txt");
+
+  console.time("Execution time for input.txt");
   exec(solution, "input.txt");
+  console.timeEnd("Execution time for input.txt");
 }

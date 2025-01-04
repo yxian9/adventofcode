@@ -19,6 +19,11 @@ export class solution {
 }
 
 if (import.meta.main) {
+  console.time("Execution time for test1.txt");
   exec(solution, "test1.txt");
+  console.timeEnd("Execution time for test1.txt");
+
+  console.time("Execution time for input.txt");
   exec(solution, "input.txt");
+  console.timeEnd("Execution time for input.txt");
 }
