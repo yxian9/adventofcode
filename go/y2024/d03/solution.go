@@ -6,234 +6,134 @@ import (
 	"io"
 	"log"
 	"os"
-	"regexp"
+	"time"
 )
+
+type solution struct {
+	input string
+	ans   int
+}
+
+const (
+	mul     = "mul("
+	doStr   = "do()"
+	dontStr = "don't()"
+)
+
+func getNum(input string, s int) (res, length int) {
+	for i := s; i < len(input); i++ {
+		cha := rune(input[i])
+		if cha >= '0' && cha <= '9' {
+			res *= 10
+			res += int(cha - '0')
+			length++
+		} else {
+			return res, length
+		}
+	}
+	return res, length
+}
+
+func (s *solution) run1(input string) {
+	for idx := 0; idx < len(input)-4; idx++ {
+		if input[idx:idx+len(mul)] != mul {
+			// idx += len(mul) - 1
+			continue
+		}
+		// start count number
+		idx += len(mul)
+		p1, p1Len := getNum(input, idx)
+		idx += p1Len
+		if input[idx] != ',' {
+			continue
+		}
+		idx++ // move over ,
+		p2, p2Len := getNum(input, idx)
+		idx += p2Len
+		if input[idx] != ')' {
+			continue
+		}
+		s.ans += p1 * p2
+	}
+}
+
+func (s *solution) run2(input string) {
+	do := true
+	for idx := 0; idx < len(input)-4; idx++ {
+		if input[idx:idx+len(doStr)] == doStr {
+			do = true
+			// idx += len(doStr) - 1 // continue will add one more
+			continue
+		}
+		if idx+len(dontStr) < len(input) && input[idx:idx+len(dontStr)] == dontStr {
+			do = false
+			// idx += len(dontStr) - 1
+			continue
+		}
+		if input[idx:idx+len(mul)] != mul {
+			// idx += len(mul) - 1
+			continue
+		}
+		// start count number
+		idx += len(mul)
+		p1, p1Len := getNum(input, idx)
+		idx += p1Len
+		if input[idx] != ',' {
+			continue
+		}
+		idx++ // move over ,
+		p2, p2Len := getNum(input, idx)
+		idx += p2Len
+		if input[idx] != ')' {
+			continue
+		}
+		if do {
+			s.ans += p1 * p2
+		}
+	}
+}
+
+func (s *solution) res() int {
+	return s.ans
+}
+
+func buildSolution(r io.Reader) *solution {
+	line, err := utils.ByteSFromReader(r)
+	if err != nil {
+		log.Fatalf("could not read input: %v %v", line, err)
+	}
+
+	return &solution{
+		input: string(line),
+		ans:   0,
+	}
+}
+
+func part1(r io.Reader) int {
+	s := buildSolution(r)
+	s.run1(s.input)
+	return s.res()
+}
+
+func part2(r io.Reader) int {
+	s := buildSolution(r)
+	s.run2(s.input)
+	return s.res()
+}
 
 func main() {
-	arg := os.Args[1]
-	fmt.Println("Running part", arg)
-	switch arg {
-	case "1":
-		res := Part1(os.Stdin)
-		fmt.Println(res)
-	case "2":
-		res := Part2(os.Stdin)
-		fmt.Println(res)
-	}
-}
-
-func Part1(r io.Reader) int {
-	lines, err := readLists(r)
+	Input, err := os.Open("input.txt")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("fail open input.txt %v", err)
 	}
-	answer := 0
-	for _, line := range lines {
-		answer += mul(line)
-	}
-	return answer
-}
-
-// func Part2(r io.Reader) int {
-// 	lines, err := readLists(r)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	answer := 0
-// 	for _, line := range lines {
-// 		answer += mul2(line)
-// 	}
-// 	return answer
-// }
-
-func Part2(r io.Reader) int {
-	lines, err := io.ReadAll(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return mul3(lines)
-}
-
-func getnumber(idx *int, line string) int {
-	num := 0
-	for *idx < len(line) && line[*idx] >= '0' && line[*idx] <= '9' {
-		num = num*10 + int(line[*idx]-'0')
-		*idx++
-	}
-	return num
-}
-
-func mul(line string) int {
-	// mul(11,8)
-	answer := 0
-	for i := 0; i < len(line)-4; i++ {
-		if line[i:i+4] != "mul(" {
-			continue
-		}
-		i += 4
-		x1 := getnumber(&i, line)
-		if line[i] != ',' {
-			continue
-		}
-		i++
-		x2 := getnumber(&i, line)
-		if line[i] != ')' {
-			continue
-		}
-		answer += x1 * x2
-
-	}
-	return answer
-}
-
-func mul2(line string) int {
-	// mul(11,8)
-	// don't() do()
-	answer := 0
-	n := len(line)
-	enable := true
-	for i := 0; i < n-7; i++ {
-		if line[i:i+4] == "do()" {
-			enable = true
-		}
-		if line[i:i+7] == "don't()" {
-			enable = false
-		}
-		if line[i:i+4] == "mul(" {
-			i += 4
-			x1 := getnumber(&i, line)
-			if line[i] != ',' {
-				continue
-			}
-			i++
-			x2 := getnumber(&i, line)
-			if line[i] != ')' {
-				continue
-			}
-			if enable {
-				answer += x1 * x2
-			}
-		}
-
-	}
-	return answer
-}
-
-func mul3(input []byte) int {
-	// mul(11,8)
-	// don't() do()
-	answer := 0
-	line := string(input)
-	n := len(line)
-	enable := true
-	for i := 0; i < n-7; i++ {
-		if line[i:i+4] == "do()" {
-			enable = true
-		}
-		if line[i:i+7] == "don't()" {
-			enable = false
-		}
-		if line[i:i+4] == "mul(" {
-			i += 4
-			x1 := getnumber(&i, line)
-			if line[i] != ',' {
-				continue
-			}
-			i++
-			x2 := getnumber(&i, line)
-			if line[i] != ')' {
-				continue
-			}
-			if enable {
-				answer += x1 * x2
-			}
-		}
-
-	}
-	return answer
-}
-
-func readLists(r io.Reader) ([]string, error) {
-	lines, err := utils.LinesFromReader(r)
-	if err != nil {
-		return nil, fmt.Errorf("could not read input: %w", err)
-	}
-
-	return lines, err
-}
-
-func PartTwo(r io.Reader) int {
-	corruptedMemory, err := io.ReadAll(r)
-	if err != nil {
-		return 0
-	}
-
-	sum, err := scanCorruptedMemoryWithConditionals(corruptedMemory)
-	if err != nil {
-		return 0
-	}
-	return sum
-}
-
-var (
-	mulInstructionPattern = regexp.MustCompile(`mul\(([0-9]+),([0-9]+)\)`)
-	anyInstructionPattern = regexp.MustCompile(`mul\(([0-9]+),([0-9]+)\)|do\(\)|don't\(\)`)
-)
-
-func computeMuls(memory []byte) (int, error) {
-	matches := mulInstructionPattern.FindAllSubmatch(memory, -1)
-
-	sum := 0
-	for _, match := range matches {
-		if len(match) != 3 {
-			return 0, fmt.Errorf("invalid match: %v", match)
-		}
-
-		a := bytesToInt(match[1])
-		b := bytesToInt(match[2])
-
-		sum += a * b
-	}
-
-	return sum, nil
-}
-
-func scanCorruptedMemoryWithConditionals(memory []byte) (int, error) {
-	matches := anyInstructionPattern.FindAllSubmatch(memory, -1)
-
-	sum := 0
-	doing := true
-
-	for _, match := range matches {
-		switch string(match[0]) {
-		case "do()":
-			doing = true
-		case "don't()":
-			doing = false
-		default:
-			if !doing {
-				continue
-			}
-		}
-
-		if len(match) != 3 {
-			return 0, fmt.Errorf("invalid match: %v", match)
-		}
-
-		a := bytesToInt(match[1])
-		b := bytesToInt(match[2])
-
-		sum += a * b
-	}
-
-	return sum, nil
-}
-
-func bytesToInt(digits []byte) int {
-	n := 0
-	for _, d := range digits {
-		n *= 10
-		n += int(d - '0')
-	}
-	return n
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	Input.Close()
+	Input, _ = os.Open("input.txt")
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
 }
