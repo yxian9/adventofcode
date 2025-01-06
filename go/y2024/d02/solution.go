@@ -4,130 +4,106 @@ import (
 	"adventofcode/utils"
 	"fmt"
 	"io"
+	"log"
 	"os"
+	"time"
 )
 
-func main() {
-	arg := os.Args[1]
-	fmt.Println("Running part", arg)
-	switch arg {
-	case "1":
-		res := PartOne(os.Stdin)
-		fmt.Println(res)
-	case "2":
-		res := PartTwo(os.Stdin)
-		fmt.Println(res)
-	}
-}
-
-func PartOne(r io.Reader) int {
-	lines, err := readLists(r)
-	if err != nil {
-		return 0
-	}
-	var ans int
-	for _, line := range lines {
-		ans += isSafe(line)
-	}
-	return ans
-}
-
-//	func PartTwo(r io.Reader) int {
-//		lines, err := readLists(r)
-//		if err != nil {
-//			return 0
-//		}
-//
-//		ans, curAns := 0, 0
-//
-//		for _, line := range lines {
-//			curAns = isSafe(line)
-//			if curAns == 0 {
-//				for i := range line {
-//					newLine := []int{}
-//					newLine = append(newLine, line[:i]...)
-//					newLine = append(newLine, line[i+1:]...)
-//					curAns = isSafe(newLine)
-//					if curAns == 1 {
-//						break
-//					}
-//				}
-//			}
-//			ans += curAns
-//		}
-//
-//		return ans
-//	}
-func PartTwo(r io.Reader) int {
-	lines, err := readLists(r)
-	if err != nil {
-		return 0
-	}
-
-	curAns, ans := 0, 0
-	for _, line := range lines {
-		curAns = isSafe2(line)
-		if curAns == 0 {
-			curAns = isSafe(line[1:])
-		}
-		ans += curAns
-	}
-
-	return ans
-}
-
-func inValid(a, b int) bool {
-	return a*b <= 0 || utils.Abs(b) > 3
-}
-
-func isSafe(l []int) int {
-	initDiff := l[1] - l[0]
-	for i := 1; i < len(l); i++ {
-		curDiff := l[i] - l[i-1]
-		if inValid(initDiff, curDiff) {
-			return 0
+func (s *solution) isValid(report []int) bool {
+	initDiff := report[1] - report[0]
+	for i := 1; i < len(report); i++ {
+		curdiff := report[i] - report[i-1]
+		if curdiff*initDiff <= 0 || utils.Abs(curdiff) > 3 {
+			return false
 		}
 	}
-	return 1
+	return true
 }
 
-func isSafe2(l []int) int {
-	skip := 0
-	initDiff := l[1] - l[0]
-	for i := 1; i < len(l); i++ {
-		curDiff := l[i] - l[i-1]
-		if skip == 1 {
-			curDiff = l[i] - l[i-2]
-			skip++
-			if i == 2 {
-				initDiff = l[2] - l[0]
-			}
-		}
-		if inValid(initDiff, curDiff) {
-			if skip == 0 {
-				skip++
+func (s *solution) isValid2(report []int) bool {
+	// generate a new slice with one less item
+	newReport := make([]int, 0, len(report)-1)
+	for i := range report {
+		for j, v := range report {
+			if i == j {
 				continue
-			} else {
-				return 0
 			}
+			newReport = append(newReport, v)
 		}
+		if s.isValid(newReport) {
+			return true
+		}
+		newReport = newReport[:0]
 	}
-	return 1
+
+	return false
 }
 
-func readLists(r io.Reader) ([][]int, error) {
+func (s *solution) run1() {
+	for _, report := range s.reports {
+		if s.isValid(report) {
+			s.ans++
+		}
+	}
+}
+
+func (s *solution) run2() {
+	for _, report := range s.reports {
+		if s.isValid(report) || s.isValid2(report) {
+			s.ans++
+		}
+	}
+}
+
+func (s *solution) res() int {
+	return s.ans
+}
+
+type solution struct {
+	ans     int
+	reports [][]int
+}
+
+func buildSolution(r io.Reader) *solution {
 	lines, err := utils.LinesFromReader(r)
 	if err != nil {
-		return nil, fmt.Errorf("could not read input: %w", err)
+		log.Fatalf("could not read input: %v %v", lines, err)
+	}
+	var reports [][]int
+	for _, line := range lines {
+		ints := utils.IntsFromString(line)
+		reports = append(reports, ints)
 	}
 
-	result := make([][]int, len(lines))
-	for i, line := range lines {
-		nums := utils.IntsFromString(line)
-		if nums == nil {
-			return nil, fmt.Errorf("no number found %v", err)
-		}
-		result[i] = nums
+	return &solution{
+		ans:     0,
+		reports: reports,
 	}
-	return result, nil
+}
+
+func part1(r io.Reader) int {
+	s := buildSolution(r)
+	s.run1()
+	return s.res()
+}
+
+func part2(r io.Reader) int {
+	s := buildSolution(r)
+	s.run2()
+	return s.res()
+}
+
+func main() {
+	Input, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
+	}
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
 }
