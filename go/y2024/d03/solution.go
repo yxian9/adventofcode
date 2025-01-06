@@ -71,7 +71,7 @@ func (s *solution) run2(input string) {
 			continue
 		}
 		if input[idx:idx+len(mul)] != mul {
-			// idx += len(mul) - 1
+			// idx += len(mul) - 1 // negative selection does not work
 			continue
 		}
 		// start count number
