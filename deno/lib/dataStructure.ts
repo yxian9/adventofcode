@@ -15,7 +15,6 @@ export class Pt {
     return `${this.r}:${this.c}`;
   }
 }
-type gridType<T> = T[][];
 
 export const Dirs = [
   new Pt(-1, 0),
@@ -25,10 +24,10 @@ export const Dirs = [
 ];
 
 export class Grid<T> {
-  array: gridType<T>;
+  array: T[][];
   nrow: number;
   ncol: number;
-  constructor(array: gridType<T>) {
+  constructor(array: T[][]) {
     this.array = array;
     this.nrow = array.length;
     this.ncol = array[0].length;
