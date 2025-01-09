@@ -4,215 +4,119 @@ import (
 	"adventofcode/utils"
 	"fmt"
 	"io"
+	"log"
 	"os"
+	"time"
 )
 
-func main() {
-	arg := os.Args[1]
-	fmt.Println("Running part", arg)
-	switch arg {
-	case "1":
-		res, err := Part1(os.Stdin)
-		if err != nil {
-			fmt.Println("p1 error ", err)
-		}
-		fmt.Println("p1 res 🙆-> ", res)
-	case "2":
-		res, err := Part2(os.Stdin)
-		if err != nil {
-			fmt.Println("p2 error ", err)
-		}
-		fmt.Println("p2 res 🙆-> ", res)
+func (s *solution) run1() {
+	s.dfs(s.start, 0)
+}
+
+func (s *solution) dfs(start utils.Pt, angle int) {
+	s.seen[start] = true
+	dir := utils.Dir4[angle]
+	nextP := start.PMove(dir)
+	if !s.IsInside(nextP) {
+		return
+	}
+	if s.GetRune(nextP) == '#' {
+		s.dfs(start, (angle+1)%4)
+	} else {
+		s.dfs(nextP, angle)
 	}
 }
 
-var dirs = [4][2]int{
-	{-1, 0},
-	{0, 1},
-	{1, 0},
-	{0, -1},
+func (s *solution) dfs2(start utils.Pt, angle int, visit map[string]bool) {
+	coordinate := fmt.Sprintf("%v : %d", start, angle)
+	if visit[coordinate] {
+		s.ans++
+		return
+	}
+	visit[coordinate] = true
+	dir := utils.Dir4[angle]
+	nextP := start.PMove(dir)
+	if !s.IsInside(nextP) {
+		return
+	}
+	if s.GetRune(nextP) == '#' || s.block[nextP] {
+		s.dfs2(start, (angle+1)%4, visit)
+	} else {
+		s.dfs2(nextP, angle, visit)
+	}
 }
 
-func buildGrid(lines []string) (seenGrid [][]int, sx, sy int) {
-	seenGrid = make([][]int, len(lines))
-	for i, line := range lines {
-		seenGrid[i] = make([]int, len(line))
-		for j, r := range line {
-			if r == '^' {
-				sx, sy = i, j
+func (s *solution) run2() {
+	s.dfs(s.start, 0)
+	for r, line := range s.Array {
+		for c := range line {
+			pt := utils.Pt{R: r, C: c}
+			if s.seen[pt] {
+				s.block[pt] = true
+				s.dfs2(s.start, 0, map[string]bool{})
+				s.block[pt] = false
 			}
 		}
 	}
-	return
 }
 
-func Part1(r io.Reader) (int, error) {
-	lines, err := readLists(r)
-	angle, answer := 0, 0
-	seenGrid, sx, sy := buildGrid(lines)
-	nrow, ncol := len(seenGrid), len(seenGrid[0])
-
-	var (
-		inside func(int, int) bool
-		nextR  func(int, int) rune
-		dfs    func(int, int, int)
-	)
-
-	inside = func(i, j int) bool {
-		return i >= 0 && i < nrow && j >= 0 && j < ncol
-	}
-
-	nextR = func(x, y int) rune {
-		return rune(lines[x][y])
-	}
-
-	dfs = func(cx, cy, angle int) {
-		seenGrid[cx][cy] = 1
-		curDir := dirs[angle%4]
-		nx, ny := cx+curDir[0], cy+curDir[1]
-		if !inside(nx, ny) {
-			return
-		}
-		if nextR(nx, ny) != '#' {
-			dfs(nx, ny, angle)
-		} else {
-			angle++
-			dfs(cx, cy, angle)
-		}
-	}
-
-	dfs(sx, sy, angle)
-	for _, row := range seenGrid {
-		for _, v := range row {
-			if v == 1 {
-				answer++
-			}
-		}
-	}
-	// for _, row := range seenGrid {
-	// 	fmt.Println(row)
-	// }
-
-	if err != nil {
-		fmt.Println(lines)
-		return 0, fmt.Errorf("error %w", err)
-	}
-
-	return answer, nil
+func (s *solution) res() int {
+	return s.ans
 }
 
-func buildGrid2(lines []string) (spotGrid [][]int, sx, sy int) {
-	spotGrid = make([][]int, len(lines))
-	for i, line := range lines {
-		spotGrid[i] = make([]int, len(line))
-		for j, r := range line {
-			if r == '^' {
-				sx, sy = i, j
-			}
-			if r == '.' {
-				spotGrid[i][j] = 1
-			}
-		}
-	}
-	return
-}
-
-func Part2(r io.Reader) (int, error) {
-	dirs := [4][2]int{
-		{-1, 0},
-		{0, 1},
-		{1, 0},
-		{0, -1},
-	}
-
-	lines, err := readLists(r)
-	angle, answer := 0, 0
-	spotGrid, sx, sy := buildGrid2(lines)
-	nrow, ncol := len(lines), len(lines[0])
-
-	var (
-		inside    func(int, int) bool
-		checkNext func(int, int) rune
-		isInfinit func(int, int, int, map[string]bool) int
-	)
-
-	inside = func(i, j int) bool {
-		return i >= 0 && i < nrow && j >= 0 && j < ncol
-	}
-
-	checkNext = func(x, y int) rune {
-		return rune(lines[x][y])
-	}
-
-	isInfinit = func(cx, cy, angle int, seen map[string]bool) int {
-		curDir := dirs[angle%4]
-		nx, ny := cx+curDir[0], cy+curDir[1]
-		if !inside(nx, ny) {
-			return 0
-		}
-		if checkNext(nx, ny) != '#' && spotGrid[nx][ny] != -1 {
-			return isInfinit(nx, ny, angle, seen)
-		} else {
-			coord := fmt.Sprintf("%d,%d,%d", nx, ny, angle%4)
-			if seen[coord] {
-				return 1
-			}
-			seen[coord] = true
-			angle++
-			return isInfinit(cx, cy, angle, seen)
-		}
-	}
-
-	// isInfinit = func(cx, cy, angle int, seen map[string]bool) int {
-	// 	for {
-	// 		curDir := dirs[angle%4]
-	// 		nx, ny := cx+curDir[0], cy+curDir[1]
-	// 		if !inside(nx, ny) {
-	// 			return 0
-	// 		}
-	// 		if checkNext(nx, ny) != '#' && spotGrid[nx][ny] != -1 {
-	// 			cx, cy = nx, ny
-	// 		} else {
-	// 			coord := fmt.Sprintf("%d,%d,%d", nx, ny, angle%4)
-	// 			if seen[coord] {
-	// 				return 1
-	// 			}
-	// 			seen[coord] = true
-	// 			angle++
-	// 		}
-	// 	}
-	// }
-
-	for i, row := range lines {
-		for j := range row {
-			if spotGrid[i][j] == 1 {
-				seen := map[string]bool{}
-				spotGrid[i][j] = -1
-				answer += isInfinit(sx, sy, angle, seen)
-				spotGrid[i][j] = 1
-			}
-		}
-	}
-	// for _, row := range lines {
-	// 	fmt.Println(row)
-	// }
-	// for _, row := range spotGrid {
-	// 	fmt.Println(row)
-	// }
-
-	if err != nil {
-		fmt.Println(lines)
-		return 0, fmt.Errorf("error %w", err)
-	}
-
-	return answer, nil
-}
-
-func readLists(r io.Reader) ([]string, error) {
+func buildSolution(r io.Reader) *solution {
 	lines, err := utils.LinesFromReader(r)
 	if err != nil {
-		return nil, fmt.Errorf("could not read input: %w", err)
+		log.Fatalf("could not read input: %v %v", lines, err)
+	}
+	var start utils.Pt
+	for r, line := range lines {
+		for c, char := range line {
+			if char == '^' {
+				start = utils.Pt{C: c, R: r}
+			}
+		}
 	}
 
-	return lines, err
+	return &solution{
+		StringGrid: utils.StringGrid{Array: lines},
+		start:      start,
+		seen:       map[utils.Pt]bool{},
+		block:      map[utils.Pt]bool{},
+	}
+}
+
+type solution struct {
+	utils.StringGrid
+	start utils.Pt
+	seen  map[utils.Pt]bool
+	block map[utils.Pt]bool
+	ans   int
+}
+
+func part1(r io.Reader) int {
+	s := buildSolution(r)
+	s.run1()
+	return s.res()
+}
+
+func part2(r io.Reader) int {
+	s := buildSolution(r)
+	s.run2()
+	return s.res()
+}
+
+func main() {
+	Input, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
+	}
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
 }

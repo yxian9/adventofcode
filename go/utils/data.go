@@ -1,28 +1,28 @@
 package utils
 
 type Pt struct {
-	C, R int
+	R, C int
 }
 
 func (p Pt) Move(dc, dr int) Pt {
-	return Pt{p.C + dc, p.R + dr}
+	return Pt{C: p.C + dc, R: p.R + dr}
 }
 
 func (p Pt) PMove(p2 Pt) Pt {
-	return Pt{p.C + p2.C, p.R + p2.R}
+	return Pt{C: p.C + p2.C, R: p.R + p2.R}
 }
 
-func (p Pt) Dist(p2 Pt) (dc, dr int) {
+func (p Pt) Dist(p2 Pt) (dr, dc int) {
 	dc = p.C - p2.C
 	dr = p.R - p2.R
-	return dc, dr
+	return dr, dc
 }
 
 var Dir4 = []Pt{
-	{C: 0, R: 1},
-	{C: -1, R: 0},
-	{C: 0, R: -1},
-	{C: 1, R: 0},
+	{R: -1, C: 0},
+	{R: 0, C: 1},
+	{R: 1, C: 0},
+	{R: 0, C: -1},
 }
 
 type StringGrid struct {
