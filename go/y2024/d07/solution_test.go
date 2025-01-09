@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -11,13 +12,15 @@ func TestPart1(t *testing.T) {
 	if err != nil {
 		log.Fatalf("fail open test1.txt %v", err)
 	}
+	want := 0
 
-	got, _ := Part1(testInput)
-	want := 3749
+	t.Run(fmt.Sprintf("want: %d", want), func(t *testing.T) {
+		got := part1(testInput)
 
-	if got != want {
-		t.Errorf("got %v want %v", got, want)
-	}
+		if got != want {
+			t.Errorf("got %v want %v", got, want)
+		}
+	})
 }
 
 func TestPart2(t *testing.T) {
@@ -25,10 +28,13 @@ func TestPart2(t *testing.T) {
 	if err != nil {
 		log.Fatalf("fail open test1.txt %v", err)
 	}
-	got, _ := Part2(testInput)
-	want := 11387
+	want := 0
 
-	if got != want {
-		t.Errorf("got %v want %v", got, want)
-	}
+	t.Run(fmt.Sprintf("want: %d", want), func(t *testing.T) {
+		got := part2(testInput)
+
+		if got != want {
+			t.Errorf("got %v want %v", got, want)
+		}
+	})
 }

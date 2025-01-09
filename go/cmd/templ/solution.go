@@ -23,6 +23,10 @@ func (s *solution) res() int {
 	return s.ans
 }
 
+func (s *solution) res2() int {
+	return s.ans
+}
+
 func buildSolution(r io.Reader) *solution {
 	lines, err := utils.LinesFromReader(r)
 	if err != nil {
@@ -43,7 +47,7 @@ func part1(r io.Reader) int {
 func part2(r io.Reader) int {
 	s := buildSolution(r)
 	s.run2()
-	return s.res()
+	return s.res2()
 }
 
 func main() {

@@ -4,114 +4,127 @@ import (
 	"adventofcode/utils"
 	"fmt"
 	"io"
+	"log"
 	"os"
+	"time"
 )
 
-func main() {
-	arg := os.Args[1]
-	fmt.Println("Running part", arg)
-	switch arg {
-	case "1":
-		res, err := Part1(os.Stdin)
-		if err != nil {
-			fmt.Println("p1 error ", err)
+func (s *solution) run1() {
+	for _, ints := range s.input {
+		if s.valid(0, ints[1], ints[0], ints[2:], s.ops) {
+			s.ans += ints[0]
 		}
-		fmt.Println("p1 res 🙆-> ", res)
-	case "2":
-		res, err := Part2(os.Stdin)
-		if err != nil {
-			fmt.Println("p2 error ", err)
-		}
-		fmt.Println("p2 res 🙆-> ", res)
 	}
 }
 
-func Part1(r io.Reader) (int, error) {
-	lines, err := readLists(r)
-	if err != nil {
-		fmt.Println(lines)
-		return 0, fmt.Errorf("error %w", err)
+func (s *solution) valid(idx, res, target int, ints []int, ops []op) bool {
+	if idx == len(ints) {
+		return res == target
 	}
-	ans := 0
-	for _, line := range lines {
-		intslice := utils.IntsFromString(line)
-		if isvalid(intslice, ops) {
-			ans += intslice[0]
-		}
-	}
-	return ans, nil
-}
-
-var ops = []func(int, int) int{
-	func(a, b int) int {
-		return a + b
-	},
-	func(a, b int) int {
-		return a * b
-	},
-}
-
-var ops2 = append(ops,
-	func(a, b int) int {
-		factor := 1
-		for factor <= b {
-			factor *= 10
-		}
-		return a*factor + b
-	})
-
-func isvalid(intslice []int, ops []func(int, int) int) bool {
-	target, input := intslice[0], intslice[1:]
-
-	var dfs func(int, int, []int) bool
-	dfs = func(level, curTotal int, input []int) bool {
-		// if curTotal == target && level == len(input) {
-		// 	return true
-		// }
-		// if curTotal > target || level > len(input)-1 {
-		// 	return false
-		// }
-
-		if level == len(input) {
-			return curTotal == target
-		}
-		if curTotal > target {
-			return false
-		}
-
-		for _, operator := range ops {
-			if dfs(level+1, operator(curTotal, input[level]), input) {
-				return true
-			}
-		}
-
+	if res > target {
 		return false
 	}
 
-	return dfs(1, input[0], input)
-}
-
-func Part2(r io.Reader) (int, error) {
-	lines, err := readLists(r)
-	if err != nil {
-		fmt.Println(lines)
-		return 0, fmt.Errorf("error %w", err)
-	}
-	ans := 0
-	for _, line := range lines {
-		intslice := utils.IntsFromString(line)
-		if isvalid(intslice, ops2) {
-			ans += intslice[0]
+	for _, op := range ops {
+		valid := s.valid(idx+1, op(res, ints[idx]), target, ints, ops)
+		if valid {
+			return true
 		}
 	}
-	return ans, nil
+	return false
 }
 
-func readLists(r io.Reader) ([]string, error) {
+func (s *solution) run2() {
+	for _, ints := range s.input {
+		if s.valid(0, ints[1], ints[0], ints[2:], s.ops2) {
+			s.ans += ints[0]
+		}
+	}
+}
+
+func (s *solution) res() int {
+	return s.ans
+}
+
+func (s *solution) res2() int {
+	return s.ans
+}
+
+type op func(int, int) int
+
+func buildSolution(r io.Reader) *solution {
 	lines, err := utils.LinesFromReader(r)
+	var input [][]int
 	if err != nil {
-		return nil, fmt.Errorf("could not read input: %w", err)
+		log.Fatalf("could not read input: %v %v", lines, err)
+	}
+	for _, line := range lines {
+		input = append(input, utils.IntsFromString(line))
+	}
+	ops := []op{
+		func(a, b int) int { return a + b },
+		func(a, b int) int { return a * b },
+	}
+	ops2 := []op{
+		func(a, b int) int { return a + b },
+		func(a, b int) int { return a * b },
+		// func(a, b int) int {
+		// 	factor := 1
+		// 	if factor <= b {
+		// 		factor *= 10
+		// 	}
+		// 	return a*factor + b
+		// },
+		func(a, b int) int {
+			// if b == 0 {
+			// 	return a * 10
+			// }
+			fac := 10
+			for fac <= b {
+				fac *= 10
+			}
+			return a*fac + b
+		},
 	}
 
-	return lines, err
+	return &solution{
+		input: input,
+		ans:   0,
+		ops:   ops,
+		ops2:  ops2,
+	}
+}
+
+type solution struct {
+	input [][]int
+	ans   int
+	ops   []op
+	ops2  []op
+}
+
+func part1(r io.Reader) int {
+	s := buildSolution(r)
+	s.run1()
+	return s.res()
+}
+
+func part2(r io.Reader) int {
+	s := buildSolution(r)
+	s.run2()
+	return s.res2()
+}
+
+func main() {
+	Input, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
+	}
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
 }
