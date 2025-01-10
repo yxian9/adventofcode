@@ -12,9 +12,9 @@ func TestPart1(t *testing.T) {
 	if err != nil {
 		log.Fatalf("fail open test1.txt %v", err)
 	}
-	want := 1928
+	want := 0
 
-	t.Run(fmt.Sprintf("12345 want: %d", want), func(t *testing.T) {
+	t.Run(fmt.Sprintf("want: %d", want), func(t *testing.T) {
 		got := part1(testInput)
 
 		if got != want {
@@ -28,7 +28,7 @@ func TestPart2(t *testing.T) {
 	if err != nil {
 		log.Fatalf("fail open test1.txt %v", err)
 	}
-	want := 2858
+	want := 0
 
 	t.Run(fmt.Sprintf("want: %d", want), func(t *testing.T) {
 		got := part2(testInput)

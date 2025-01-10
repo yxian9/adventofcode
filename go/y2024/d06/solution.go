@@ -13,8 +13,24 @@ func (s *solution) run1() {
 	s.dfs(s.start, 0)
 }
 
-func (s *solution) dfs(start utils.Pt, angle int) {
-	s.seen[start] = true
+func (s *solution) dfs(cur utils.Pt, angle int) {
+	if !s.IsInside(cur) {
+		return
+	}
+	s.seen[cur] = true
+	dir := utils.Dir4[angle]
+	nextP := cur.PMove(dir)
+	if !s.IsInside(nextP) {
+		s.dfs(nextP, angle)
+	} else if s.GetRune(nextP) == '#' {
+		s.dfs(cur, (angle+1)%4)
+	} else {
+		s.dfs(nextP, angle)
+	}
+}
+
+func (s *solution) original_dfs(start utils.Pt, angle int) {
+	s.seen[start] = true // the logic make sure the start is inside
 	dir := utils.Dir4[angle]
 	nextP := start.PMove(dir)
 	if !s.IsInside(nextP) {
@@ -61,7 +77,7 @@ func (s *solution) run2() {
 }
 
 func (s *solution) res() int {
-	return s.ans
+	return len(s.seen)
 }
 
 func buildSolution(r io.Reader) *solution {
