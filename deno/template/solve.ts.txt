@@ -12,6 +12,9 @@ export class solution {
   res(): number {
     return this.ans;
   }
+  res2(): number {
+    return this.ans;
+  }
   part1() {
   }
   part2() {
