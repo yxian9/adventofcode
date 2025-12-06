@@ -12,6 +12,10 @@ func ByteSFromReader(r io.Reader) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error %w", err)
 	}
+	if seeker, ok := r.(io.Seeker); ok {
+		seeker.Seek(0, 0)
+	}
+
 	return bytes.TrimSpace(line), nil
 }
 
