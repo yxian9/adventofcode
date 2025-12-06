@@ -1,0 +1,115 @@
+package main
+
+import (
+	"adventofcode/utils"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"strconv"
+	"time"
+)
+
+type solution struct {
+	cursor, len int
+	input       []string
+	ans, ans2   int
+}
+
+func floordiv(a, b int) int {
+	if a >= 0 {
+		return a / b
+	}
+	return (((-a) + b - 1) / b) // correct floor division for negatives
+}
+
+func (s *solution) fix() {
+	before := s.cursor
+	fmt.Println("point to -> ", before)
+
+	res := floordiv(before, s.len)
+	if res > 0 {
+		s.ans2 += res
+		fmt.Println("across ans2", s.ans2)
+	}
+
+	s.cursor = ((s.cursor % s.len) + s.len) % s.len
+	fmt.Print("  reset to -> ", s.cursor, "\n")
+	if s.cursor == 0 {
+		s.ans++
+	}
+}
+
+func (s *solution) move(instru string) {
+	value, _ := strconv.Atoi(instru[1:])
+
+	switch instru[0] {
+	case 'L':
+		s.cursor -= value
+	case 'R':
+		s.cursor += value
+	}
+	fmt.Print("Rotate ", instru, " ")
+	s.fix()
+}
+
+func (s *solution) run1() {
+	for _, instru := range s.input {
+		s.move(instru)
+	}
+}
+
+func (s *solution) run2() {
+	fmt.Println("Start Part2")
+	for _, instru := range s.input {
+		s.move(instru)
+	}
+}
+
+func (s *solution) res() int {
+	return s.ans
+}
+
+func (s *solution) res2() int {
+	return s.ans2
+}
+
+func buildSolution(r io.Reader) *solution {
+	lines, err := utils.LinesFromReader(r)
+	if err != nil {
+		log.Fatalf("could not read input: %v %v", lines, err)
+	}
+
+	return &solution{
+		input:  lines,
+		cursor: 50,
+		len:    100,
+	}
+}
+
+func part1(r io.Reader) int {
+	s := buildSolution(r)
+	s.run1()
+	return s.res()
+}
+
+func part2(r io.Reader) int {
+	s := buildSolution(r)
+	s.run2()
+	return s.res2()
+}
+
+func main() {
+	Input, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
+	}
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+}

@@ -43,7 +43,7 @@ func main() {
 func ParseFlags() (day, year int, overwrite bool) {
 	today := time.Now()
 	flag.IntVar(&day, "d", today.Day(), "day number to fetch, 1-25")
-	flag.IntVar(&year, "y", 2024, "AOC year") // today.Year(), "AOC year")
+	flag.IntVar(&year, "y", 2025, "AOC year") // today.Year(), "AOC year")
 	flag.BoolVar(&overwrite, "w", false, "overwrite?")
 	flag.Parse()
 

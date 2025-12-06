@@ -10,7 +10,17 @@ import (
 )
 
 type solution struct {
-	ans int
+	input      []string
+	ans1, ans2 int
+}
+
+func buildSolution(r io.Reader) *solution {
+	lines, _ := utils.LinesFromReader(r)
+	return &solution{
+		input: lines,
+		ans1:  0,
+		ans2:  0,
+	}
 }
 
 func (s *solution) run1() {
@@ -19,29 +29,18 @@ func (s *solution) run1() {
 func (s *solution) run2() {
 }
 
-func (s *solution) res() int {
-	return s.ans
+func (s *solution) res1() int {
+	return s.ans1
 }
 
 func (s *solution) res2() int {
-	return s.ans
-}
-
-func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
-	if err != nil {
-		log.Fatalf("could not read input: %v %v", lines, err)
-	}
-
-	return &solution{
-		ans: 0,
-	}
+	return s.ans2
 }
 
 func part1(r io.Reader) int {
 	s := buildSolution(r)
 	s.run1()
-	return s.res()
+	return s.res1()
 }
 
 func part2(r io.Reader) int {

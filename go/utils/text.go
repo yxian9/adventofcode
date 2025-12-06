@@ -15,7 +15,7 @@ func ByteSFromReader(r io.Reader) ([]byte, error) {
 	return bytes.TrimSpace(line), nil
 }
 
-// return list of lines
+// LinesFromReader return list of lines
 func LinesFromReader(r io.Reader) ([]string, error) {
 	var lines []string
 

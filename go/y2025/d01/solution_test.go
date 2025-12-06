@@ -7,19 +7,18 @@ import (
 	"testing"
 )
 
-var t1, t2 = 0, 0
-
 func TestPart1(t *testing.T) {
 	testInput, err := os.Open("test1.txt")
 	if err != nil {
 		log.Fatalf("fail open test1.txt %v", err)
 	}
+	want := 3
 
-	t.Run(fmt.Sprintf("want: %d", t1), func(t *testing.T) {
+	t.Run(fmt.Sprintf("want: %d", want), func(t *testing.T) {
 		got := part1(testInput)
 
-		if got != t1 {
-			t.Errorf("got %v want %v", got, t1)
+		if got != want {
+			t.Errorf("got %v want %v", got, want)
 		}
 	})
 }
@@ -29,12 +28,13 @@ func TestPart2(t *testing.T) {
 	if err != nil {
 		log.Fatalf("fail open test1.txt %v", err)
 	}
+	want := 6
 
-	t.Run(fmt.Sprintf("want: %d", t2), func(t *testing.T) {
+	t.Run(fmt.Sprintf("want: %d", want), func(t *testing.T) {
 		got := part2(testInput)
 
-		if got != t2 {
-			t.Errorf("got %v want %v", got, t2)
+		if got != want {
+			t.Errorf("got %v want %v", got, want)
 		}
 	})
 }

@@ -1,3 +1,4 @@
+// Package utils helper func for adoc
 package utils
 
 type Pt struct {

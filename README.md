@@ -9,12 +9,17 @@ solved in any programming language you like.
 First and foremost, go to the [Advent of Code website](https://adventofcode.com/)
 and log in and obtain the cookie.
 
+In request header, in the request.header.cookie, find the session={value} pair.
+
+Copy the {value} part to `cmd/cookie.txt` file.(do not include the `session=` part)
 
 Build the `adventofcode go` command-line tool:
 
 ```bash
 cd go
 make build
+## color test
+go install github.com/rakyll/gotest@latest
 ```
 
 Get started on your first puzzle:
@@ -32,18 +37,15 @@ should be:
    ```bash
    go test ./y2024/d01/*
    go run  ./y2024/d01/* 
+   #
+   gotest 
    ```
 
 2. Once you think you have found the answer to the problem, submit it on the
    adventofcode.com website. If it's the right answer, congrats!
-
-
-
 
 ## Helpers
 
 When logged in to the adventofcode.com website, your browser has a cookie called
 `session`. Retrieve this cookie's value and save it to the `cmd/cookie.txt`. CLI
 will automatically download your input for the day.
-
-
