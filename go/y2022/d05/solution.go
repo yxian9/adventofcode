@@ -6,8 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sort"
-	"strconv"
 	"time"
 )
 
@@ -26,44 +24,9 @@ func buildSolution(r io.Reader) *solution {
 }
 
 func (s *solution) run1() {
-	var (
-		cals []int
-		sum  int
-	)
-
-	for _, cal := range s.input {
-		if cal == "" {
-			cals = append(cals, sum)
-			sum = 0
-		}
-		i, _ := strconv.Atoi(cal)
-		sum += i
-	}
-	cals = append(cals, sum)
-	sort.Ints(cals)
-
-	s.ans1 = cals[len(cals)-1]
-
-	for i := range 3 {
-		s.ans2 += cals[len(cals)-i-1]
-	}
-
-	// fmt.Printf("%#v\n", s.input)
-	// var (
-	// 	sum int
-	// )
-	// for _, item := range s.input {
-	// 	i, _ := strconv.Atoi(item)
-	// 	sum += i
-	// 	if i == 0 {
-	// 		s.ans1 = max(sum, s.ans1)
-	// 		sum = 0
-	// 	}
-	// }
 }
 
 func (s *solution) run2() {
-	s.run1()
 }
 
 func (s *solution) res1() int {

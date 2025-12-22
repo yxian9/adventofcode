@@ -6,8 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sort"
-	"strconv"
 	"time"
 )
 
@@ -25,41 +23,42 @@ func buildSolution(r io.Reader) *solution {
 	}
 }
 
+type pair struct {
+	l, r int
+}
+
+func intersect(p1, p2 pair) pair {
+	l, r := max(p1.l, p2.l), min(p1.r, p2.r)
+	return pair{l, r}
+}
+
+// func contain(p1, p2 pair) bool {
+// 	// if l <= r { // overlap
+// 	inters :=
+// 	return inters == p1 || inters == p2
+// 	// if inters == p1 || inters == p2 {
+// 	// 		return true
+// 	// 	}
+// 	// }
+// 	// return false
+// }
+
 func (s *solution) run1() {
-	var (
-		cals []int
-		sum  int
-	)
-
-	for _, cal := range s.input {
-		if cal == "" {
-			cals = append(cals, sum)
-			sum = 0
+	var a, b, c, d int
+	for _, str := range s.input {
+		_, err := fmt.Sscanf(str, "%d-%d,%d-%d", &a, &b, &c, &d)
+		if err != nil {
+			panic(err)
 		}
-		i, _ := strconv.Atoi(cal)
-		sum += i
+		p1, p2 := pair{a, b}, pair{c, d}
+		inter := intersect(p1, p2)
+		if inter.l <= inter.r { // if intersect exist
+			s.ans2++
+		}
+		if inter == p1 || inter == p2 {
+			s.ans1++
+		}
 	}
-	cals = append(cals, sum)
-	sort.Ints(cals)
-
-	s.ans1 = cals[len(cals)-1]
-
-	for i := range 3 {
-		s.ans2 += cals[len(cals)-i-1]
-	}
-
-	// fmt.Printf("%#v\n", s.input)
-	// var (
-	// 	sum int
-	// )
-	// for _, item := range s.input {
-	// 	i, _ := strconv.Atoi(item)
-	// 	sum += i
-	// 	if i == 0 {
-	// 		s.ans1 = max(sum, s.ans1)
-	// 		sum = 0
-	// 	}
-	// }
 }
 
 func (s *solution) run2() {

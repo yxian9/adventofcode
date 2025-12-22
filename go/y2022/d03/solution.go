@@ -6,8 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sort"
-	"strconv"
 	"time"
 )
 
@@ -25,45 +23,60 @@ func buildSolution(r io.Reader) *solution {
 	}
 }
 
+func score(r rune) int {
+	if r >= 'a' {
+		return int(r - 'a' + 1)
+	}
+	return int(r - 'A' + 27)
+}
+
 func (s *solution) run1() {
-	var (
-		cals []int
-		sum  int
-	)
-
-	for _, cal := range s.input {
-		if cal == "" {
-			cals = append(cals, sum)
-			sum = 0
+	m := [128]int{}
+	for _, ruck := range s.input {
+		half := len(ruck) / 2
+		for i, r := range ruck {
+			if i < half { // first harf
+				m[r]++ // track freq
+			} else {
+				if m[r] > 0 {
+					s.ans1 += score(r)
+					m = [128]int{}
+					break
+				}
+			}
 		}
-		i, _ := strconv.Atoi(cal)
-		sum += i
 	}
-	cals = append(cals, sum)
-	sort.Ints(cals)
+}
 
-	s.ans1 = cals[len(cals)-1]
-
-	for i := range 3 {
-		s.ans2 += cals[len(cals)-i-1]
+func (s *solution) findCommon(i int) rune {
+	var m [128]int
+	for j := range 3 {
+		var local [128]int
+		for _, r := range s.input[i+j] {
+			if local[r] > 0 {
+				continue
+			}
+			local[r]++
+			m[r]++
+		}
+		// for i, v := range local {
+		// 	if v > 0 {
+		// 		m[i]++
+		// 	}
+		// }
 	}
-
-	// fmt.Printf("%#v\n", s.input)
-	// var (
-	// 	sum int
-	// )
-	// for _, item := range s.input {
-	// 	i, _ := strconv.Atoi(item)
-	// 	sum += i
-	// 	if i == 0 {
-	// 		s.ans1 = max(sum, s.ans1)
-	// 		sum = 0
-	// 	}
-	// }
+	for i, v := range m {
+		if v == 3 {
+			return rune(i)
+		}
+	}
+	return 0
 }
 
 func (s *solution) run2() {
-	s.run1()
+	for i := 0; i < len(s.input); i += 3 {
+		s.ans2 += score(s.findCommon(i))
+	}
 }
 
 func (s *solution) res1() int {

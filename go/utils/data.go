@@ -1,6 +1,38 @@
 // Package utils helper func for adoc
 package utils
 
+import "strings"
+
+type List[T any] struct {
+	Arr []T
+}
+
+func (L *List[T]) Push(item T) {
+	L.Arr = append(L.Arr, item)
+}
+
+func (L *List[T]) Len() int {
+	return len(L.Arr)
+}
+
+// Concat only work for string array
+func (L *List[T]) Concat(sep string) string {
+	var b strings.Builder
+	for i, s := range L.Arr {
+		if i > 0 {
+			b.WriteString(sep)
+		}
+		b.WriteString(any(s).(string))
+	}
+	return b.String()
+}
+
+func (L *List[T]) Pop() (lastItem T) {
+	lastItem = L.Arr[L.Len()-1]
+	L.Arr = L.Arr[:L.Len()-1]
+	return lastItem
+}
+
 type Pt struct {
 	R, C int
 }
