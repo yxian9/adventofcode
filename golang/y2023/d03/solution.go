@@ -160,7 +160,7 @@ func part2(r io.Reader) int {
 }
 
 func main() {
-	Input, err := os.Open("input.txt")
+	Input, err := os.Open("./input.txt")
 	if err != nil {
 		log.Fatalf("fail open input.txt %v", err)
 	}

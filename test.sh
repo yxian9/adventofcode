@@ -1,0 +1,1 @@
+cd golang/y2023/d03 && go run solution.go 
