@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -13,7 +13,7 @@ func (s *solution) isValid(report []int) bool {
 	initDiff := report[1] - report[0]
 	for i := 1; i < len(report); i++ {
 		curdiff := report[i] - report[i-1]
-		if curdiff*initDiff <= 0 || utils.Abs(curdiff) > 3 {
+		if curdiff*initDiff <= 0 || h.Abs(curdiff) > 3 {
 			return false
 		}
 	}
@@ -65,13 +65,13 @@ type solution struct {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
 	var reports [][]int
 	for _, line := range lines {
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		reports = append(reports, ints)
 	}
 

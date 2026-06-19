@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -61,11 +61,11 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
-	nums := utils.IntsFromString(lines[0])
+	nums := h.IntsFromString(lines[0])
 
 	return &solution{
 		nums: nums,

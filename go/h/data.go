@@ -1,5 +1,5 @@
 // Package utils helper func for adoc
-package utils
+package h
 
 import "strings"
 
@@ -56,6 +56,16 @@ var Dir4 = []Pt{
 	{R: 0, C: 1},
 	{R: 1, C: 0},
 	{R: 0, C: -1},
+}
+var Dir8 = []Pt{
+	{R: -1, C: 0},
+	{R: 0, C: 1},
+	{R: 1, C: 0},
+	{R: 0, C: -1},
+	{R: -1, C: -1},
+	{R: 1, C: 1},
+	{R: -1, C: 1},
+	{R: 1, C: -1},
 }
 
 type StringGrid struct {

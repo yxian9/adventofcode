@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -10,20 +10,20 @@ import (
 
 type solution struct {
 	ans, step int
-	utils.StringGrid
-	utils.Seen
-	minScore    map[utils.Pt]int
-	posDirScore map[[2]utils.Pt]int
-	paths       map[utils.Pt]bool
-	start, end  utils.Pt
+	h.StringGrid
+	h.Seen
+	minScore    map[h.Pt]int
+	posDirScore map[[2]h.Pt]int
+	paths       map[h.Pt]bool
+	start, end  h.Pt
 }
 type bp struct {
-	pos, dir utils.Pt
+	pos, dir h.Pt
 	score    int
-	path     []utils.Pt
+	path     []h.Pt
 }
 
-func (s *solution) dfs(p, angle utils.Pt, score int) {
+func (s *solution) dfs(p, angle h.Pt, score int) {
 	if s.GetRune(p) == '#' || score > s.ans || s.Seen[p] {
 		return
 	}
@@ -40,7 +40,7 @@ func (s *solution) dfs(p, angle utils.Pt, score int) {
 	}
 
 	s.Seen[p] = true
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		nextP := p.PMove(dir)
 		turned := 0
 		if angle != dir {
@@ -52,12 +52,12 @@ func (s *solution) dfs(p, angle utils.Pt, score int) {
 	s.Seen[p] = false
 }
 
-func (s *solution) posdir(p, d utils.Pt) (a [2]utils.Pt) {
+func (s *solution) posdir(p, d h.Pt) (a [2]h.Pt) {
 	a[0], a[1] = p, d
 	return a
 }
 
-func (s *solution) bfs(p, dir utils.Pt) {
+func (s *solution) bfs(p, dir h.Pt) {
 	queue := []bp{{p, dir, 0, nil}}
 	s.minScore[p] = 0
 
@@ -80,7 +80,7 @@ func (s *solution) bfs(p, dir utils.Pt) {
 					s.ans = l.score
 				}
 			}
-			for _, dir := range utils.Dir4 {
+			for _, dir := range h.Dir4 {
 
 				nextP := l.pos.PMove(dir)
 				if s.GetRune(nextP) == '#' {
@@ -106,9 +106,9 @@ func (s *solution) bfs(p, dir utils.Pt) {
 	}
 }
 
-func (s *solution) bfs2(p, dir utils.Pt) {
+func (s *solution) bfs2(p, dir h.Pt) {
 	queue := []bp{{p, dir, 0, nil}}
-	for _, v := range utils.Dir4 {
+	for _, v := range h.Dir4 {
 		cur := s.posdir(p, v)
 		s.posDirScore[cur] = 0
 	}
@@ -132,7 +132,7 @@ func (s *solution) bfs2(p, dir utils.Pt) {
 				continue
 			}
 
-			for _, dir := range utils.Dir4 {
+			for _, dir := range h.Dir4 {
 				nextP := l.pos.PMove(dir)
 				if s.GetRune(nextP) == '#' {
 					continue
@@ -147,7 +147,7 @@ func (s *solution) bfs2(p, dir utils.Pt) {
 
 				if !ok || next_score <= score {
 					s.posDirScore[nextPosDir] = next_score
-					newPath := append([]utils.Pt{}, l.path...)
+					newPath := append([]h.Pt{}, l.path...)
 					queue = append(queue, bp{nextP, dir, next_score, append(newPath, l.pos)})
 					// queue = append(queue, bp{nextP, dir, next_score, append(l.path, l.pos)}) // this will modify the upderline array
 					// if array get reallocated, when next dir use l.path, the l.path is gone is gone
@@ -158,7 +158,7 @@ func (s *solution) bfs2(p, dir utils.Pt) {
 }
 
 func (s *solution) run1() {
-	s.bfs(s.start, utils.Dir4[3])
+	s.bfs(s.start, h.Dir4[3])
 	// debug the count map
 
 	// for r, line := range s.Array {
@@ -175,8 +175,8 @@ func (s *solution) run1() {
 }
 
 func (s *solution) run2() {
-	s.bfs(s.start, utils.Dir4[3])
-	s.bfs2(s.start, utils.Dir4[3])
+	s.bfs(s.start, h.Dir4[3])
+	s.bfs2(s.start, h.Dir4[3])
 }
 
 func (s *solution) res() int {
@@ -188,19 +188,19 @@ func (s *solution) res2() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
 
 	return &solution{
-		Seen:        make(utils.Seen),
-		start:       utils.Pt{C: 1, R: len(lines) - 2},
-		end:         utils.Pt{C: len(lines[0]) - 2, R: 1},
-		minScore:    map[utils.Pt]int{},
-		posDirScore: map[[2]utils.Pt]int{},
-		paths:       map[utils.Pt]bool{},
-		StringGrid: utils.StringGrid{
+		Seen:        make(h.Seen),
+		start:       h.Pt{C: 1, R: len(lines) - 2},
+		end:         h.Pt{C: len(lines[0]) - 2, R: 1},
+		minScore:    map[h.Pt]int{},
+		posDirScore: map[[2]h.Pt]int{},
+		paths:       map[h.Pt]bool{},
+		StringGrid: h.StringGrid{
 			NRow:  len(lines),
 			NCol:  len(lines[0]),
 			Array: lines,

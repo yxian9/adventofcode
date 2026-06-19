@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -9,7 +9,7 @@ import (
 )
 
 type robot struct {
-	utils.Pt
+	h.Pt
 	vx, vy int
 }
 
@@ -130,16 +130,16 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
 	robots := []robot{}
 
 	for _, line := range lines {
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		rb := robot{
-			utils.Pt{C: ints[0], R: ints[1]},
+			h.Pt{C: ints[0], R: ints[1]},
 			ints[2], ints[3],
 		}
 		robots = append(robots, rb)

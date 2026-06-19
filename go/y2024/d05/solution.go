@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -93,7 +93,7 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
@@ -105,7 +105,7 @@ func buildSolution(r io.Reader) *solution {
 			first = false
 			continue
 		}
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		if first {
 			graph[ints[0]] = append(graph[ints[0]], ints[1])
 		} else {

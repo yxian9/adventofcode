@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -16,7 +16,7 @@ func Part1(r io.Reader) int {
 }
 
 func buildSolution(r io.Reader) solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v", err)
 	}
@@ -26,7 +26,7 @@ func buildSolution(r io.Reader) solution {
 			if r == '.' {
 				continue
 			}
-			ante[r] = append(ante[r], utils.Pt{C: i, R: j})
+			ante[r] = append(ante[r], h.Pt{C: i, R: j})
 		}
 	}
 
@@ -39,8 +39,8 @@ func buildSolution(r io.Reader) solution {
 }
 
 type (
-	antennas  map[rune][]utils.Pt
-	antinodes map[utils.Pt]struct{}
+	antennas  map[rune][]h.Pt
+	antinodes map[h.Pt]struct{}
 	solution  struct {
 		nrow, ncol int
 		antennas   antennas
@@ -52,7 +52,7 @@ func (s solution) res() int {
 	return len(s.antinodes)
 }
 
-func (s solution) isInside(p utils.Pt) bool {
+func (s solution) isInside(p h.Pt) bool {
 	return p.C >= 0 && p.C < s.nrow && p.R >= 0 && p.R < s.ncol
 }
 
@@ -61,7 +61,7 @@ func (s solution) run() {
 		for i := range anteSlice {
 			for j := i + 1; j < len(anteSlice); j++ {
 
-				ptSlice := [2]utils.Pt{
+				ptSlice := [2]h.Pt{
 					anteSlice[i], anteSlice[j],
 				}
 
@@ -93,7 +93,7 @@ func (s solution) run2() {
 		for i := range antes {
 			for j := i + 1; j < len(antes); j++ {
 				// for each ante pairs
-				atPair := [2]utils.Pt{
+				atPair := [2]h.Pt{
 					antes[i], antes[j],
 				}
 

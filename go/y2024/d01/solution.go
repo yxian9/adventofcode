@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -19,7 +19,7 @@ func (s *solution) run1() {
 	slices.Sort(s.l1)
 	slices.Sort(s.l2)
 	for i := range s.l1 {
-		s.ans += utils.Abs(s.l1[i] - s.l2[i])
+		s.ans += h.Abs(s.l1[i] - s.l2[i])
 	}
 }
 
@@ -39,7 +39,7 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
@@ -48,7 +48,7 @@ func buildSolution(r io.Reader) solution {
 		l2 = make([]int, len(lines))
 	)
 	for i, line := range lines {
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		l1[i], l2[i] = ints[0], ints[1]
 	}
 

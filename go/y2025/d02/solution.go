@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -16,7 +16,7 @@ type solution struct {
 }
 
 func buildSolution(r io.Reader) *solution {
-	line, _ := utils.ByteSFromReader(r)
+	line, _ := h.ByteSFromReader(r)
 	return &solution{
 		input: string(line),
 		ans1:  0,

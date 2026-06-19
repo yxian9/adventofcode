@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -9,7 +9,7 @@ import (
 )
 
 type machine struct {
-	a, b, target utils.Pt
+	a, b, target h.Pt
 }
 
 type solution struct {
@@ -18,11 +18,11 @@ type solution struct {
 	machines []machine
 }
 
-func (s *solution) found(an, bn int, a, b, target utils.Pt) bool {
+func (s *solution) found(an, bn int, a, b, target h.Pt) bool {
 	return (an*a.C+bn*b.C) == target.C && (an*a.R+bn*b.R) == target.R
 }
 
-func (s *solution) lowest(a, b, target utils.Pt) {
+func (s *solution) lowest(a, b, target h.Pt) {
 	lowest, alreadyFound := 0, false
 
 	for aNum := range s.limit {
@@ -41,7 +41,7 @@ func (s *solution) lowest(a, b, target utils.Pt) {
 	s.ans += lowest
 }
 
-func (s *solution) lowest2(a, b, target utils.Pt) {
+func (s *solution) lowest2(a, b, target h.Pt) {
 	ax, ay, bx, by, px, py := a.C, a.R, b.C, b.R, target.C, target.R
 	det := ax*by - ay*bx
 	fmt.Println(det, "det")
@@ -76,12 +76,12 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
 	machines := []machine{}
-	ps := [3]utils.Pt{}
+	ps := [3]h.Pt{}
 
 	for i, line := range lines {
 		// fmt.Println(line)
@@ -91,7 +91,7 @@ func buildSolution(r io.Reader) *solution {
 			})
 			continue
 		}
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		ps[i%4].C = ints[0]
 		ps[i%4].R = ints[1]
 	}
@@ -109,12 +109,12 @@ func buildSolution(r io.Reader) *solution {
 }
 
 func buildSolution2(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
 	machines := []machine{}
-	ps := [3]utils.Pt{}
+	ps := [3]h.Pt{}
 
 	fmt.Println("part2", machines)
 	fmt.Println(lines)
@@ -126,7 +126,7 @@ func buildSolution2(r io.Reader) *solution {
 			})
 			continue
 		}
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		if i%4 == 2 {
 			ps[i%4].C = ints[0] + 10000000000000
 			ps[i%4].R = ints[1] + 10000000000000

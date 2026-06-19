@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -17,15 +17,15 @@ const (
 )
 
 type solution struct {
-	start utils.Pt
-	utils.Seen
-	utils.StringGrid
+	start h.Pt
+	h.Seen
+	h.StringGrid
 	ans    int
 	saves  map[int]int
-	orders map[utils.Pt]int
+	orders map[h.Pt]int
 }
 
-func (s *solution) makeOrder(p utils.Pt, step int) {
+func (s *solution) makeOrder(p h.Pt, step int) {
 	// invalid
 	if s.GetRune(p) == W || s.Seen[p] {
 		return
@@ -36,15 +36,15 @@ func (s *solution) makeOrder(p utils.Pt, step int) {
 	}
 
 	s.Seen[p] = true
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		nextP := p.PMove(dir)
 		s.makeOrder(nextP, step+1)
 	}
 	s.Seen[p] = false
 }
 
-func (s *solution) findCheat(p utils.Pt) (cheatS utils.Pt, cheatEs []utils.Pt, steps []int, find bool) {
-	for _, dir := range utils.Dir4 {
+func (s *solution) findCheat(p h.Pt) (cheatS h.Pt, cheatEs []h.Pt, steps []int, find bool) {
+	for _, dir := range h.Dir4 {
 		nextP := p.Move(dir.R*2, dir.C*2)
 		if s.IsInside(nextP) && s.GetRune(nextP) != W && !s.Seen[nextP] {
 			cheatEs = append(cheatEs, nextP)
@@ -56,9 +56,9 @@ func (s *solution) findCheat(p utils.Pt) (cheatS utils.Pt, cheatEs []utils.Pt, s
 	return cheatS, nil, nil, false
 }
 
-func (s *solution) findCheat2(start utils.Pt) {
-	queue := []utils.Pt{start}
-	seen := map[utils.Pt]bool{}
+func (s *solution) findCheat2(start h.Pt) {
+	queue := []h.Pt{start}
+	seen := map[h.Pt]bool{}
 	seen[start] = true
 	step := 0
 
@@ -75,7 +75,7 @@ func (s *solution) findCheat2(start utils.Pt) {
 					s.saves[save]++
 				}
 			}
-			for _, dir := range utils.Dir4 {
+			for _, dir := range h.Dir4 {
 				nextP := p.Move(dir.R, dir.C)
 				if s.IsInside(nextP) && !seen[nextP] {
 					seen[nextP] = true
@@ -90,9 +90,9 @@ func (s *solution) findCheat2(start utils.Pt) {
 	}
 }
 
-type findCheat func(utils.Pt) (utils.Pt, []utils.Pt, []int, bool)
+type findCheat func(h.Pt) (h.Pt, []h.Pt, []int, bool)
 
-func (s *solution) walk(p utils.Pt, findCheat findCheat) {
+func (s *solution) walk(p h.Pt, findCheat findCheat) {
 	if s.GetRune(p) == W || s.Seen[p] {
 		return
 	}
@@ -114,14 +114,14 @@ func (s *solution) walk(p utils.Pt, findCheat findCheat) {
 	}
 
 	s.Seen[p] = true
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		nextP := p.PMove(dir)
 		s.walk(nextP, findCheat)
 	}
 	s.Seen[p] = false
 }
 
-func (s *solution) walk2(p utils.Pt) {
+func (s *solution) walk2(p h.Pt) {
 	if s.GetRune(p) == W || s.Seen[p] {
 		return
 	}
@@ -132,7 +132,7 @@ func (s *solution) walk2(p utils.Pt) {
 	s.findCheat2(p)
 
 	s.Seen[p] = true
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		nextP := p.PMove(dir)
 		s.walk2(nextP)
 	}
@@ -159,25 +159,25 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
-	var start utils.Pt
+	var start h.Pt
 	for r, row := range lines {
 		for c, v := range row {
 			if v == S {
-				start = utils.Pt{C: c, R: r}
+				start = h.Pt{C: c, R: r}
 			}
 		}
 	}
 
 	return &solution{
 		start:  start,
-		Seen:   utils.Seen{},
+		Seen:   h.Seen{},
 		saves:  map[int]int{},
-		orders: map[utils.Pt]int{},
-		StringGrid: utils.StringGrid{
+		orders: map[h.Pt]int{},
+		StringGrid: h.StringGrid{
 			Array: lines,
 		},
 		ans: 0,

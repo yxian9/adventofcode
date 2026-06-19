@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -53,13 +53,13 @@ func (s *solution) res2() int {
 type op func(int, int) int
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	var input [][]int
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
 	for _, line := range lines {
-		input = append(input, utils.IntsFromString(line))
+		input = append(input, h.IntsFromString(line))
 	}
 	ops := []op{
 		func(a, b int) int { return a + b },

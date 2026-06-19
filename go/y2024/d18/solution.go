@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -10,11 +10,11 @@ import (
 
 type solution struct {
 	ans int
-	utils.Grid[bool]
+	h.Grid[bool]
 }
 
 type pt struct {
-	utils.Pt
+	h.Pt
 	step int
 }
 
@@ -29,7 +29,7 @@ func (s *solution) run1() {
 	// 	}
 	// 	fmt.Println("")
 	// }
-	queue := []pt{{Pt: utils.Pt{C: 0, R: 0}, step: 0}}
+	queue := []pt{{Pt: h.Pt{C: 0, R: 0}, step: 0}}
 	for len(queue) > 0 {
 		n := len(queue)
 		for n > 0 {
@@ -44,7 +44,7 @@ func (s *solution) run1() {
 			// if s.Get(l.Pt) {
 			// 	continue
 			// }
-			for _, dir := range utils.Dir4 {
+			for _, dir := range h.Dir4 {
 				nextP := l.PMove(dir)
 				if !s.IsInside(nextP) || s.Get(nextP) {
 					continue
@@ -64,7 +64,7 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
@@ -74,7 +74,7 @@ func buildSolution(r io.Reader) *solution {
 		grid[i] = make([]bool, ncol)
 	}
 	for i, line := range lines {
-		ints := utils.IntsFromString(line)
+		ints := h.IntsFromString(line)
 		grid[ints[1]][ints[0]] = true
 		if i == 1023 {
 			break
@@ -83,7 +83,7 @@ func buildSolution(r io.Reader) *solution {
 
 	return &solution{
 		ans: 0,
-		Grid: utils.Grid[bool]{
+		Grid: h.Grid[bool]{
 			NRow:  nrow,
 			NCol:  ncol,
 			Array: grid,
@@ -98,7 +98,7 @@ func part1(r io.Reader) int {
 }
 
 func part2(r io.Reader) int {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
@@ -114,7 +114,7 @@ func part2(r io.Reader) int {
 		}
 
 		for i, line := range lines {
-			ints := utils.IntsFromString(line)
+			ints := h.IntsFromString(line)
 			grid[ints[1]][ints[0]] = true
 			if i == checkedLines {
 				break
@@ -123,7 +123,7 @@ func part2(r io.Reader) int {
 
 		s := &solution{
 			ans: 0,
-			Grid: utils.Grid[bool]{
+			Grid: h.Grid[bool]{
 				NRow:  nrow,
 				NCol:  ncol,
 				Array: grid,

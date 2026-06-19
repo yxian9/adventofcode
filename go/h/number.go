@@ -1,4 +1,9 @@
-package utils
+package h
+
+import (
+	"fmt"
+	"reflect"
+)
 
 // IntsFromString returns a slice of integers in str, where these numbers are
 // separated by non-number runes. If a dash preceding a number is the only
@@ -28,6 +33,28 @@ func Abs(a int) int {
 	return a
 }
 
+func Isdigit(b any) (int, bool) {
+	switch v := b.(type) {
+	case rune:
+		if v >= '0' && v <= '9' {
+			return int(v - '0'), true
+		}
+		return 0, false
+	case byte:
+		if v >= '0' && v <= '9' {
+			return int(v - '0'), true
+		}
+		return 0, false
+	default:
+		fmt.Println("found type:", reflect.TypeOf(v))
+		panic("in correct type, expect byte and rune")
+	}
+}
+
+func IsdigitBool(b any) bool {
+	_, ok := Isdigit(b)
+	return ok
+}
 func IntsFromString(str string) (intSlice []int) {
 	// wordBuf := make([]rune, 0, len(str))
 	wordBuf := 0

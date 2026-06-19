@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"os"
@@ -128,7 +128,7 @@ func Part2(r io.Reader) int {
 }
 
 func readLists(r io.Reader) ([]string, error) {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		return nil, fmt.Errorf("could not read input: %w", err)
 	}

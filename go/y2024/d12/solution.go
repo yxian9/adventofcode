@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -9,20 +9,20 @@ import (
 )
 
 type (
-	headPt   utils.Pt
+	headPt   h.Pt
 	solution struct {
 		ans int
 		// lands map[headPt]map[utils.Pt]rune
-		lands map[headPt][]utils.Pt
-		seen  map[utils.Pt]bool
-		utils.StringGrid
+		lands map[headPt][]h.Pt
+		seen  map[h.Pt]bool
+		h.StringGrid
 	}
 )
 
 func (s *solution) run1() {
 	for i, line := range s.Array {
 		for j, flower := range line {
-			cur := utils.Pt{C: i, R: j}
+			cur := h.Pt{C: i, R: j}
 			if s.seen[cur] {
 				continue
 			}
@@ -34,9 +34,9 @@ func (s *solution) run1() {
 func (s *solution) res() int {
 	for header, land := range s.lands {
 		area, perimeter := len(land), 0
-		flower := s.GetRune(utils.Pt(header))
+		flower := s.GetRune(h.Pt(header))
 		for _, pt := range land {
-			for _, dir := range utils.Dir4 {
+			for _, dir := range h.Dir4 {
 				nexPt := pt.Move(dir.C, dir.R)
 				if !s.IsInside(nexPt) || s.GetRune(nexPt) != flower {
 					perimeter++
@@ -51,11 +51,11 @@ func (s *solution) res() int {
 func (s *solution) res2() int {
 	for header, land := range s.lands {
 		area, sides := len(land), 0
-		flower := s.GetRune(utils.Pt(header))
+		flower := s.GetRune(h.Pt(header))
 		for _, pt := range land {
 			boolSlice := make([]bool, 4)
 			// check whether neigher direc with same bool
-			for i, dir := range utils.Dir4 {
+			for i, dir := range h.Dir4 {
 				nexPt := pt.Move(dir.C, dir.R)
 				if !s.IsInside(nexPt) || s.GetRune(nexPt) != flower {
 					boolSlice[i] = true
@@ -69,7 +69,7 @@ func (s *solution) res2() int {
 				}
 				// for insider conner, both can go
 				if !v && !boolSlice[neighb] {
-					pt1, pt2 := utils.Dir4[i], utils.Dir4[neighb]
+					pt1, pt2 := h.Dir4[i], h.Dir4[neighb]
 					anglePt := pt.Move(pt1.C+pt2.C, pt1.R+pt2.R)
 					if s.GetRune(anglePt) != flower {
 						sides++
@@ -83,7 +83,7 @@ func (s *solution) res2() int {
 	return s.ans
 }
 
-func (s *solution) dfs1(curP utils.Pt, flower rune, header headPt) {
+func (s *solution) dfs1(curP h.Pt, flower rune, header headPt) {
 	if !s.IsInside(curP) || s.GetRune(curP) != flower || s.seen[curP] {
 		return
 	}
@@ -93,7 +93,7 @@ func (s *solution) dfs1(curP utils.Pt, flower rune, header headPt) {
 	// }
 
 	s.lands[header] = append(s.lands[header], curP)
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		nextP := curP.Move(dir.C, dir.R)
 		s.dfs1(nextP, flower, header)
 	}
@@ -103,7 +103,7 @@ func (s *solution) run2() {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
@@ -111,9 +111,9 @@ func buildSolution(r io.Reader) *solution {
 
 	return &solution{
 		ans:   0,
-		seen:  map[utils.Pt]bool{},
-		lands: map[headPt][]utils.Pt{},
-		StringGrid: utils.StringGrid{
+		seen:  map[h.Pt]bool{},
+		lands: map[headPt][]h.Pt{},
+		StringGrid: h.StringGrid{
 			NRow:  nrow,
 			NCol:  ncol,
 			Array: lines,

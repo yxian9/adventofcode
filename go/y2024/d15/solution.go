@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -11,12 +11,12 @@ import (
 
 type solution struct {
 	ans      int
-	robot    utils.Pt
+	robot    h.Pt
 	instruct []rune
-	utils.Grid[rune]
+	h.Grid[rune]
 }
 
-var Dirs = map[rune]utils.Pt{
+var Dirs = map[rune]h.Pt{
 	'v': {C: 0, R: 1},
 	'<': {C: -1, R: 0},
 	'^': {C: 0, R: -1},
@@ -43,14 +43,14 @@ func (s *solution) run1() {
 	}
 }
 
-func (s *solution) loopSwap(ptSlice []utils.Pt, dir utils.Pt) {
+func (s *solution) loopSwap(ptSlice []h.Pt, dir h.Pt) {
 	for i := len(ptSlice) - 1; i >= 0; i-- {
 		nextPt := ptSlice[i].PMove(dir)
 		s.Swap(nextPt, ptSlice[i])
 	}
 }
 
-func (s *solution) getPair(pt utils.Pt) (ptSlice []utils.Pt) {
+func (s *solution) getPair(pt h.Pt) (ptSlice []h.Pt) {
 	if s.Get(pt) == '[' {
 		ptSlice = append(ptSlice, pt.Move(1, 0), pt)
 		return ptSlice
@@ -59,8 +59,8 @@ func (s *solution) getPair(pt utils.Pt) (ptSlice []utils.Pt) {
 	return ptSlice
 }
 
-func (s *solution) yfind(start utils.Pt, dir utils.Pt) (ptSlice []utils.Pt, find bool) {
-	var queue []utils.Pt
+func (s *solution) yfind(start h.Pt, dir h.Pt) (ptSlice []h.Pt, find bool) {
+	var queue []h.Pt
 	queue = append(queue, s.getPair(start)...)
 	for len(queue) > 0 {
 		n := len(queue)
@@ -87,7 +87,7 @@ func (s *solution) yfind(start utils.Pt, dir utils.Pt) (ptSlice []utils.Pt, find
 	return ptSlice, true
 }
 
-func (s *solution) xfind(start utils.Pt, dir utils.Pt) (ptSlice []utils.Pt, find bool) {
+func (s *solution) xfind(start h.Pt, dir h.Pt) (ptSlice []h.Pt, find bool) {
 	for {
 		ptSlice = append(ptSlice, start)
 		nextPt := start.PMove(dir)
@@ -170,11 +170,11 @@ func (s *solution) res2() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
-	var robot utils.Pt
+	var robot h.Pt
 	nrow, ncol := 0, len(lines[0])
 	firstPart := true
 
@@ -189,7 +189,7 @@ func buildSolution(r io.Reader) *solution {
 		if firstPart {
 			for j, r := range line {
 				if r == '@' {
-					robot = utils.Pt{C: j, R: i}
+					robot = h.Pt{C: j, R: i}
 				}
 			}
 			grid = append(grid, []rune(line))
@@ -201,7 +201,7 @@ func buildSolution(r io.Reader) *solution {
 	return &solution{
 		instruct: instruc,
 		robot:    robot,
-		Grid: utils.Grid[rune]{
+		Grid: h.Grid[rune]{
 			NRow:  nrow,
 			NCol:  ncol,
 			Array: grid,
@@ -210,11 +210,11 @@ func buildSolution(r io.Reader) *solution {
 }
 
 func buildSolution2(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
-	var robot utils.Pt
+	var robot h.Pt
 	nrow, ncol := 0, 2*len(lines[0])
 	firstPart := true
 
@@ -231,7 +231,7 @@ func buildSolution2(r io.Reader) *solution {
 			for j, r := range line {
 				switch r {
 				case '@':
-					robot = utils.Pt{C: 2 * j, R: i}
+					robot = h.Pt{C: 2 * j, R: i}
 					cur = append(cur, '.', '.')
 				case '#':
 					cur = append(cur, '#', '#')
@@ -251,7 +251,7 @@ func buildSolution2(r io.Reader) *solution {
 	return &solution{
 		instruct: instruc,
 		robot:    robot,
-		Grid: utils.Grid[rune]{
+		Grid: h.Grid[rune]{
 			NRow:  nrow,
 			NCol:  ncol,
 			Array: grid,

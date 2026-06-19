@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -13,12 +13,12 @@ func (s *solution) run1() {
 	s.dfs(s.start, 0)
 }
 
-func (s *solution) dfs(cur utils.Pt, angle int) {
+func (s *solution) dfs(cur h.Pt, angle int) {
 	if !s.IsInside(cur) {
 		return
 	}
 	s.seen[cur] = true
-	dir := utils.Dir4[angle]
+	dir := h.Dir4[angle]
 	nextP := cur.PMove(dir)
 	if !s.IsInside(nextP) {
 		s.dfs(nextP, angle)
@@ -29,9 +29,9 @@ func (s *solution) dfs(cur utils.Pt, angle int) {
 	}
 }
 
-func (s *solution) original_dfs(start utils.Pt, angle int) {
+func (s *solution) original_dfs(start h.Pt, angle int) {
 	s.seen[start] = true // the logic make sure the start is inside
-	dir := utils.Dir4[angle]
+	dir := h.Dir4[angle]
 	nextP := start.PMove(dir)
 	if !s.IsInside(nextP) {
 		return
@@ -43,14 +43,14 @@ func (s *solution) original_dfs(start utils.Pt, angle int) {
 	}
 }
 
-func (s *solution) dfs2(start utils.Pt, angle int, visit map[string]bool) {
+func (s *solution) dfs2(start h.Pt, angle int, visit map[string]bool) {
 	coordinate := fmt.Sprintf("%v : %d", start, angle)
 	if visit[coordinate] {
 		s.ans++
 		return
 	}
 	visit[coordinate] = true
-	dir := utils.Dir4[angle]
+	dir := h.Dir4[angle]
 	nextP := start.PMove(dir)
 	if !s.IsInside(nextP) {
 		return
@@ -66,7 +66,7 @@ func (s *solution) run2() {
 	s.dfs(s.start, 0)
 	for r, line := range s.Array {
 		for c := range line {
-			pt := utils.Pt{R: r, C: c}
+			pt := h.Pt{R: r, C: c}
 			if s.seen[pt] {
 				s.block[pt] = true
 				s.dfs2(s.start, 0, map[string]bool{})
@@ -81,32 +81,32 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
 	}
-	var start utils.Pt
+	var start h.Pt
 	for r, line := range lines {
 		for c, char := range line {
 			if char == '^' {
-				start = utils.Pt{C: c, R: r}
+				start = h.Pt{C: c, R: r}
 			}
 		}
 	}
 
 	return &solution{
-		StringGrid: utils.StringGrid{Array: lines},
+		StringGrid: h.StringGrid{Array: lines},
 		start:      start,
-		seen:       map[utils.Pt]bool{},
-		block:      map[utils.Pt]bool{},
+		seen:       map[h.Pt]bool{},
+		block:      map[h.Pt]bool{},
 	}
 }
 
 type solution struct {
-	utils.StringGrid
-	start utils.Pt
-	seen  map[utils.Pt]bool
-	block map[utils.Pt]bool
+	h.StringGrid
+	start h.Pt
+	seen  map[h.Pt]bool
+	block map[h.Pt]bool
 	ans   int
 }
 

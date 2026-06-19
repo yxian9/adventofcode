@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -11,25 +11,25 @@ import (
 type solution struct {
 	nrow, ncol  int
 	grid        []string
-	seen        map[utils.Pt]bool
+	seen        map[h.Pt]bool
 	ans         int
 	trailHeader map[string]bool
 }
 
-func (s *solution) isInside(pt utils.Pt) bool {
+func (s *solution) isInside(pt h.Pt) bool {
 	return pt.C >= 0 && pt.C < s.nrow && pt.R >= 0 && pt.R < s.ncol
 }
 
-func (s *solution) found(sp, cp utils.Pt) {
+func (s *solution) found(sp, cp h.Pt) {
 	id := fmt.Sprintf("%d,%d,%d,%d", sp.C, sp.R, cp.C, cp.R)
 	s.trailHeader[id] = true
 }
 
-func (s *solution) pInt(pt utils.Pt) int {
+func (s *solution) pInt(pt h.Pt) int {
 	return int(s.grid[pt.C][pt.R] - '0')
 }
 
-func (s *solution) dfs1(startP, curP utils.Pt, target int) {
+func (s *solution) dfs1(startP, curP h.Pt, target int) {
 	if !s.isInside(curP) || s.seen[curP] || s.pInt(curP) != target {
 		return
 	}
@@ -38,7 +38,7 @@ func (s *solution) dfs1(startP, curP utils.Pt, target int) {
 		return
 	}
 	s.seen[curP] = true
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		s.dfs1(startP, curP.Move(dir.C, dir.R), target+1)
 	}
 	s.seen[curP] = false
@@ -48,14 +48,14 @@ func (s *solution) run1() {
 	for i, line := range s.grid {
 		for j, r := range line {
 			if r == '0' {
-				cp := utils.Pt{C: i, R: j}
+				cp := h.Pt{C: i, R: j}
 				s.dfs1(cp, cp, 0)
 			}
 		}
 	}
 }
 
-func (s *solution) dfs2(startP, curP utils.Pt, target int) {
+func (s *solution) dfs2(startP, curP h.Pt, target int) {
 	if !s.isInside(curP) || s.seen[curP] || s.pInt(curP) != target {
 		return
 	}
@@ -63,7 +63,7 @@ func (s *solution) dfs2(startP, curP utils.Pt, target int) {
 		s.ans++
 		return
 	}
-	for _, dir := range utils.Dir4 {
+	for _, dir := range h.Dir4 {
 		nxP := curP.Move(dir.C, dir.R)
 		s.seen[curP] = true
 		s.dfs2(startP, nxP, target+1)
@@ -75,7 +75,7 @@ func (s *solution) run2() {
 	for i, line := range s.grid {
 		for j, r := range line {
 			if r == '0' {
-				cp := utils.Pt{C: i, R: j}
+				cp := h.Pt{C: i, R: j}
 				s.dfs2(cp, cp, 0)
 			}
 		}
@@ -87,7 +87,7 @@ func (s *solution) res() int {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := utils.LinesFromReader(r)
+	lines, err := h.LinesFromReader(r)
 	nr, nc := len(lines), len(lines[0])
 	if err != nil {
 		log.Fatalf("could not read input: %v %v", lines, err)
@@ -100,7 +100,7 @@ func buildSolution(r io.Reader) *solution {
 	return &solution{
 		nrow:        nr,
 		ncol:        nc,
-		seen:        make(map[utils.Pt]bool),
+		seen:        make(map[h.Pt]bool),
 		grid:        lines,
 		trailHeader: make(map[string]bool),
 	}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/utils"
+	"adventofcode/h"
 	"fmt"
 	"io"
 	"log"
@@ -18,7 +18,7 @@ type solution struct {
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, _ := utils.LinesFromReader(r)
+	lines, _ := h.LinesFromReader(r)
 	return &solution{
 		input: lines,
 		ans1:  0,
@@ -51,7 +51,7 @@ func parse(line string) cmdRes {
 }
 
 func (s *solution) run1() {
-	var pathList utils.List[string]
+	var pathList h.List[string]
 
 	sizeMap := make(map[string]int)
 
