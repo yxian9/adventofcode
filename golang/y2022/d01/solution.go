@@ -1,11 +1,13 @@
 package main
 
 import (
-	"adventofcode/h"
+	"adventofcode/golang/h"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"time"
@@ -87,7 +89,10 @@ func part2(r io.Reader) int {
 }
 
 func main() {
-	Input, err := os.Open("input.txt")
+	_, filename, _, _ := runtime.Caller(0)
+	dir := filepath.Dir(filename)
+
+	Input, err := os.Open(filepath.Join(dir, "input.txt"))
 	if err != nil {
 		log.Fatalf("fail open input.txt %v", err)
 	}

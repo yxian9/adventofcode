@@ -24,7 +24,7 @@ func LinesFromReader(r io.Reader) ([]string, error) {
 	var lines []string
 
 	s := bufio.NewScanner(r)
-	s.Split(bufio.ScanLines)
+	// s.Split(bufio.ScanLines) // default
 	for s.Scan() {
 		lines = append(lines, s.Text())
 	}

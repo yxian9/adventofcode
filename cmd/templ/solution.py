@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from h import parse
+from python.h import parse
 
 
 class Solution:

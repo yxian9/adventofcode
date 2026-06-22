@@ -1,7 +1,7 @@
 import time
 from pathlib import Path
 
-from h import DIR8, parse
+import python.h as h
 
 
 def is_symbol(ch: str) -> bool:
@@ -9,7 +9,7 @@ def is_symbol(ch: str) -> bool:
 
 
 def part1(text: str) -> int:
-    grid = parse(text)
+    grid = h.parse(text)
     nrow, ncol = len(grid), len(grid[0])
     total = 0
 
@@ -20,7 +20,7 @@ def part1(text: str) -> int:
                 num, valid = 0, False
                 while j < ncol and grid[i][j].isdigit():
                     num = num * 10 + int(grid[i][j])
-                    for dr, dc in DIR8:
+                    for dr, dc in h.DIR8:
                         nr, nc = i + dr, j + dc
                         if (
                             0 <= nr < nrow
@@ -37,7 +37,7 @@ def part1(text: str) -> int:
 
 
 def part2(text: str) -> int:
-    grid = parse(text)
+    grid = h.parse(text)
     nrow, ncol = len(grid), len(grid[0])
     gears: dict[tuple[int, int], list[int]] = {}
 
@@ -49,7 +49,7 @@ def part2(text: str) -> int:
                 adj_gears: set[tuple[int, int]] = set()
                 while j < ncol and grid[i][j].isdigit():
                     num = num * 10 + int(grid[i][j])
-                    for dr, dc in DIR8:
+                    for dr, dc in h.DIR8:
                         nr, nc = i + dr, j + dc
                         if 0 <= nr < nrow and 0 <= nc < ncol and grid[nr][nc] == "*":
                             adj_gears.add((nr, nc))

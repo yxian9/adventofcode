@@ -1,11 +1,13 @@
 package main
 
 import (
-	"adventofcode/h"
+	"adventofcode/golang/h"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 	"time"
 )
 
@@ -50,7 +52,9 @@ func part2(r io.Reader) int {
 }
 
 func main() {
-	Input, err := os.Open("input.txt")
+
+	_, filename, _, _ := runtime.Caller(0)
+	Input, err := os.Open(filepath.Join(filepath.Dir(filename), "input.txt"))
 	if err != nil {
 		log.Fatalf("fail open input.txt %v", err)
 	}
@@ -58,8 +62,11 @@ func main() {
 	result := part1(Input)
 	elapsed := time.Since(start)
 	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	Input.Close()
+	Input, err = os.Open(filepath.Join(filepath.Dir(filename), "input.txt"))
 	start = time.Now()
 	result = part2(Input)
 	elapsed = time.Since(start)
 	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	Input.Close()
 }

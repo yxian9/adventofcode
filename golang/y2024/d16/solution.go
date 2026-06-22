@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/h"
+	"adventofcode/golang/h"
 	"fmt"
 	"io"
 	"log"

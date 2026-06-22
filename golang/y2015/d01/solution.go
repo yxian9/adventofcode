@@ -1,77 +1,65 @@
 package main
 
 import (
+	"adventofcode/golang/h"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"time"
 )
 
 type solution struct {
-	input []byte
-	ans   int
-}
-
-func (s *solution) run1() {
-	for _, v := range s.input {
-		if v == byte(')') {
-			s.ans--
-		}
-		if v == byte('(') {
-			s.ans++
-		}
-	}
-}
-
-func (s *solution) run2() {
-	for i, v := range s.input {
-		if v == byte(')') {
-			s.ans--
-		}
-		if v == byte('(') {
-			s.ans++
-		}
-		if s.ans == -1 {
-			s.ans = i + 1
-			break
-		}
-	}
-}
-
-func (s *solution) res() int {
-	return s.ans
+	input      []string
+	ans1, ans2 int
 }
 
 func buildSolution(r io.Reader) *solution {
-	lines, err := io.ReadAll(r)
-	if err != nil {
-		log.Fatalf("could not read input: %v %v", lines, err)
-	}
-
+	lines, _ := h.LinesFromReader(r)
 	return &solution{
 		input: lines,
+		ans1:  0,
+		ans2:  0,
 	}
+}
+
+func (s *solution) run1() {
+}
+
+func (s *solution) run2() {
+}
+
+func (s *solution) res1() int {
+	return s.ans1
+}
+
+func (s *solution) res2() int {
+	return s.ans2
 }
 
 func part1(r io.Reader) int {
 	s := buildSolution(r)
 	s.run1()
-	return s.res()
+	return s.res1()
 }
 
 func part2(r io.Reader) int {
 	s := buildSolution(r)
 	s.run2()
-	return s.res()
+	return s.res2()
 }
 
 func main() {
-	arg := os.Args[1]
-	fmt.Println("Running part", arg)
-	switch arg {
-	case "1":
-		fmt.Println("p1 res 🙆-> ", part1(os.Stdin))
-	case "2":
-		fmt.Println("p2 res 🙆-> ", part2(os.Stdin))
+	Input, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
 	}
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
 }

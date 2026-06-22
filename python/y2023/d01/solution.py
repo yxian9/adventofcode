@@ -3,12 +3,12 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from h import parse
+import python.h as h
 
 
 class Solution:
     def __init__(self, text: str):
-        self.input = parse(text)
+        self.input = h.parse(text)
         self.ans1 = 0
         self.ans2 = 0
 
