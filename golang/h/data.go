@@ -1,7 +1,16 @@
 // Package utils helper func for adoc
 package h
 
-import "strings"
+import (
+	"encoding/json"
+	"fmt"
+	"strings"
+)
+
+func Pp(i any) {
+	b, _ := json.MarshalIndent(i, "", "  ")
+	fmt.Println(string(b))
+}
 
 type List[T any] struct {
 	Arr []T

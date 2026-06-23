@@ -1,17 +1,17 @@
-cookie_file := "cmd/cookie.txt"
 
-@set year day:
-    ./setenv.sh {{year}} {{day}}
+set year day:
+    kitten @ send-text "export year={{ year }}; export day=$(printf '%02d' {{ day }})"
 
 gen: build
     ./generator -y $year -d $day
 
+gr:
+    go run  ./golang/y$year/d$day/
+gt:
+    go test ./golang/y$year/d$day/
 
-got:
-    go test ./golang/y2015/d01/
-
-pt:
-    uv run python -m unittest python.y2023.d01.test_solution
+pr:
+    uv run python -m unittest python.y$year.d$day.test_solution
 
 build:
     @echo "build generator"

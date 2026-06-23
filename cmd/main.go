@@ -10,12 +10,15 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
 var (
 	//go:embed templ/test1.txt
-	testInput string
+	testInput1 string
+	//go:embed templ/test2.txt
+	testInput2 string
 	//go:embed templ/solution.go
 	solutionTemplate string
 	//go:embed templ/solution_test.go
@@ -31,7 +34,9 @@ var (
 type LangTarget struct {
 	Name      string
 	Dir       string
+	Primary   bool
 	Templates []FileTemplate
+	Symlinks  []string
 }
 
 type FileTemplate struct {
@@ -43,12 +48,14 @@ func buildLangTargets(workdir string, year, day int) []LangTarget {
 	dayDir := filepath.Join(fmt.Sprintf("y%04d", year), fmt.Sprintf("d%02d", day))
 	return []LangTarget{
 		{
-			Name: "golang",
-			Dir:  filepath.Join(workdir, "golang", dayDir),
+			Name:    "golang",
+			Dir:     filepath.Join(workdir, "golang", dayDir),
+			Primary: true,
 			Templates: []FileTemplate{
 				{"solution.go", []byte(solutionTemplate)},
 				{"solution_test.go", []byte(solutionTestTemplate)},
-				{"test1.txt", []byte(testInput)},
+				{"test1.txt", []byte(testInput1)},
+				{"test2.txt", []byte(testInput2)},
 			},
 		},
 		{
@@ -57,8 +64,8 @@ func buildLangTargets(workdir string, year, day int) []LangTarget {
 			Templates: []FileTemplate{
 				{"solution.py", []byte(pySolutionTemplate)},
 				{"test_solution.py", []byte(pyTestTemplate)},
-				{"test1.txt", []byte(testInput)},
 			},
+			Symlinks: []string{"input.txt", "test1.txt", "test2.txt"},
 		},
 	}
 }
@@ -147,6 +154,43 @@ func (gen *Generator) Run() error {
 	if err := gen.DownloadInput(); err != nil {
 		return fmt.Errorf("downloading input: %w", err)
 	}
+	if err := gen.createSymlinks(); err != nil {
+		return fmt.Errorf("creating symlinks: %w", err)
+	}
+	return nil
+}
+
+func (gen *Generator) primaryDir() string {
+	for _, lang := range gen.langs {
+		if lang.Primary {
+			return lang.Dir
+		}
+	}
+	return ""
+}
+
+func (gen *Generator) createSymlinks() error {
+	primaryDir := gen.primaryDir()
+	if primaryDir == "" {
+		return nil
+	}
+	for _, lang := range gen.langs {
+		if lang.Primary || len(lang.Symlinks) == 0 {
+			continue
+		}
+		for _, name := range lang.Symlinks {
+			linkPath := filepath.Join(lang.Dir, name)
+			if fileExists(linkPath) && !gen.overwrite {
+				fmt.Printf("  👉 Skipping existing file %s.\n", linkPath)
+				continue
+			}
+			os.Remove(linkPath)
+			target, _ := filepath.Rel(lang.Dir, filepath.Join(primaryDir, name))
+			if err := os.Symlink(target, linkPath); err != nil {
+				return fmt.Errorf("symlinking %q -> %q: %w", linkPath, target, err)
+			}
+		}
+	}
 	return nil
 }
 
@@ -175,16 +219,10 @@ func (gen *Generator) DownloadInput() error {
 		return nil
 	}
 
-	allExist := true
-	for _, lang := range gen.langs {
-		path := filepath.Join(lang.Dir, "input.txt")
-		if !fileExists(path) || gen.overwrite {
-			allExist = false
-			break
-		}
-	}
-	if allExist {
-		fmt.Println("  👉 Skipping input download; files already exist.")
+	primaryDir := gen.primaryDir()
+	inputPath := filepath.Join(primaryDir, "input.txt")
+	if fileExists(inputPath) && !gen.overwrite {
+		fmt.Println("  👉 Skipping input download; file already exists.")
 		return nil
 	}
 
@@ -194,6 +232,7 @@ func (gen *Generator) DownloadInput() error {
 	if err != nil {
 		return fmt.Errorf("preparing GET request to %q: %w", url, err)
 	}
+	cookie = strings.TrimRight(cookie, "\n")
 
 	req.AddCookie(&http.Cookie{Name: "session", Value: cookie})
 
@@ -213,15 +252,8 @@ func (gen *Generator) DownloadInput() error {
 		return fmt.Errorf("adventofcode.com responded with %d: %s", resp.StatusCode, input)
 	}
 
-	for _, lang := range gen.langs {
-		path := filepath.Join(lang.Dir, "input.txt")
-		if fileExists(path) && !gen.overwrite {
-			fmt.Printf("  👉 Skipping existing file %s.\n", path)
-			continue
-		}
-		if err := os.WriteFile(path, input, 0644); err != nil {
-			return fmt.Errorf("writing input to %q: %w", path, err)
-		}
+	if err := os.WriteFile(inputPath, input, 0644); err != nil {
+		return fmt.Errorf("writing input to %q: %w", inputPath, err)
 	}
 
 	fmt.Printf("  👉 Downloaded input.\n")

@@ -1,3 +1,4 @@
 .env
 input.txt
-deno/.vscode/launch.json
+**/.vscode/*
+/cmd/cookie.txt
