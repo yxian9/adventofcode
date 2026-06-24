@@ -9,8 +9,9 @@ gr:
     go run  ./golang/y$year/d$day/
 gt:
     go test ./golang/y$year/d$day/
-
 pr:
+    uv run python -m  python.y$year.d$day.solution
+pt:
     uv run python -m unittest python.y$year.d$day.test_solution
 
 build:
