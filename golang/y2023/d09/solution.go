@@ -1,0 +1,72 @@
+package main
+
+import (
+	"adventofcode/golang/h"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"runtime"
+	"time"
+)
+
+type solution struct {
+	input      []string
+	ans1, ans2 int
+}
+
+func buildSolution(r io.Reader) *solution {
+	lines, _ := h.LinesFromReader(r)
+	return &solution{
+		input: lines,
+		ans1:  0,
+		ans2:  0,
+	}
+}
+
+func (s *solution) run1() {
+}
+
+func (s *solution) run2() {
+}
+
+func (s *solution) res1() int {
+	return s.ans1
+}
+
+func (s *solution) res2() int {
+	return s.ans2
+}
+
+func part1(r io.Reader) int {
+	s := buildSolution(r)
+	s.run1()
+	return s.res1()
+}
+
+func part2(r io.Reader) int {
+	s := buildSolution(r)
+	s.run2()
+	return s.res2()
+}
+
+func main() {
+
+	_, filename, _, _ := runtime.Caller(0)
+	Input, err := os.Open(filepath.Join(filepath.Dir(filename), "input.txt"))
+	if err != nil {
+		log.Fatalf("fail open input.txt %v", err)
+	}
+	start := time.Now()
+	result := part1(Input)
+	elapsed := time.Since(start)
+	fmt.Printf("p1 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	Input.Close()
+	Input, err = os.Open(filepath.Join(filepath.Dir(filename), "input.txt"))
+	start = time.Now()
+	result = part2(Input)
+	elapsed = time.Since(start)
+	fmt.Printf("p2 res 🙆-> %d (Time taken: %s)\n", result, elapsed)
+	Input.Close()
+}

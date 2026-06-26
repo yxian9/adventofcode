@@ -1,4 +1,4 @@
 .env
 # input.txt
-**/.vscode/*
 /cmd/cookie.txt
+**/__pycache__/**

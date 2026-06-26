@@ -14,11 +14,37 @@ class Solution:
         self.ans1 = 0
         self.ans2 = 0
 
+    def one(self, s: str):
+        nums = [int(i) for i in s.split()]
+        ret = nums[-1]
+        while not all(i == 0 for i in nums):
+            cur = []
+            for i in range(1, len(nums)):
+                cur.append(nums[i] - nums[i - 1])
+            ret += cur[-1]
+            nums = cur
+        self.ans1 += ret
+
+    def two(self, s: str):
+        nums = [int(i) for i in s.split()]
+        ret = nums[0]
+        c = 1
+        while not all(i == 0 for i in nums):
+            cur = []
+            for i in range(1, len(nums)):
+                cur.append(nums[i] - nums[i - 1])
+            c *= -1
+            ret += c * cur[0]
+            nums = cur
+        self.ans2 += ret
+
     def run1(self):
-        pass
+        for s in self.input:
+            self.one(s)
 
     def run2(self):
-        pass
+        for s in self.input:
+            self.two(s)
 
 
 def part1(text: str) -> int:

@@ -1,0 +1,15 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug Current Test",
+			"type": "debugpy",
+			"request": "launch",
+			"python": "${workspaceFolder}/.venv/bin/python",
+			"program": "${workspaceFolder}/run_test.py",
+			"args": ["${relativeFile}"],
+			"cwd": "${workspaceFolder}",
+			"justMyCode": false
+		}
+	]
+}

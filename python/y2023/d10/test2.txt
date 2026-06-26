@@ -1,0 +1,1 @@
+../../../golang/y2023/d10/test2.txt

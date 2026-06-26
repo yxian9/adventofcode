@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -87,10 +88,12 @@ func main() {
 
 func ParseFlags() (day, year int, overwrite bool) {
 	today := time.Now()
-	flag.IntVar(&day, "d", today.Day(), "day number to fetch, 1-25")
+	var dayStr string
+	flag.StringVar(&dayStr, "d", fmt.Sprintf("%d", today.Day()), "day number to fetch, 1-25")
 	flag.IntVar(&year, "y", 2025, "AOC year")
 	flag.BoolVar(&overwrite, "w", false, "overwrite?")
 	flag.Parse()
+	day, _ = strconv.Atoi(dayStr) // default parser treat 08 as oct and failed
 
 	if day > 25 || day < 1 {
 		log.Fatalf("day out of range: %d", day)
@@ -199,6 +202,19 @@ func (gen *Generator) scaffold(lang LangTarget) error {
 		return fmt.Errorf("creating directory %q: %w", lang.Dir, err)
 	}
 	fmt.Printf("🏗️  Scaffolding %s: %s\n", lang.Name, lang.Dir)
+
+	if lang.Name == "python" {
+		pyRoot := filepath.Join(gen.workdir, "python")
+		yearDir := filepath.Dir(lang.Dir)
+		for _, dir := range []string{pyRoot, yearDir, lang.Dir} {
+			initPath := filepath.Join(dir, "__init__.py")
+			if !fileExists(initPath) {
+				if err := os.WriteFile(initPath, []byte(""), 0644); err != nil {
+					return fmt.Errorf("writing %q: %w", initPath, err)
+				}
+			}
+		}
+	}
 
 	for _, tmpl := range lang.Templates {
 		path := filepath.Join(lang.Dir, tmpl.Filename)

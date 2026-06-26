@@ -4,8 +4,8 @@ from pathlib import Path
 from .solution import part1, part2
 
 DIR = Path(__file__).parent
-WANT1 = 1
-WANT2 = 0
+WANT1 = 114
+WANT2 = 2
 
 
 class TestSolution(unittest.TestCase):

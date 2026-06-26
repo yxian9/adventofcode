@@ -2,7 +2,7 @@
 set year day:
     kitten @ send-text "export year={{ year }}; export day=$(printf '%02d' {{ day }})"
 
-gen: build
+gen:
     ./generator -y $year -d $day
 
 gr:
